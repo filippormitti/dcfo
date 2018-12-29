@@ -183,6 +183,15 @@ app.route("/messages").get( auth, (req,res,next) => {
 
 });
 
+app.get('/messages/:receiver', auth, (req, res, next) => {
+  // req.params.receiver contains the :receiver URL component
+  message.getModel().find({ receiver: req.params.receiver }).then((documents) => {
+      return res.status(200).json(documents);
+  }).catch((reason) => {
+      return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
+  });
+});
+
 app.delete( '/messages/:id', auth, (req,res,next) => {
 
   // Check player role
@@ -203,13 +212,27 @@ app.delete( '/messages/:id', auth, (req,res,next) => {
 
 app.get('/users', auth, (req,res,next) => {
 
-  user.getModel().find( {}, {digest:0, salt:0} ).then( (users) => {
+  user.getModel().find( {}, {digest:0, salt:0} ).sort({ win: -1 }).then( (users) => {
     return res.status(200).json( users );
   }).catch( (reason) => {
     return next({ statusCode:404, error: true, errormessage: "DB error: "+reason });
   })
 
 });
+
+app.delete('/users/:id', auth, (req, res, next) => {
+  // Check player role
+  if (!user.newUser(req.user).hasAdminRole()) {
+      return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not a Player" });
+  }
+  // req.params.id contains the :id URL component
+  user.getModel().deleteOne({ _id: req.params.id }).then(() => {
+      return res.status(200).json({ error: false, errormessage: "" });
+  }).catch((reason) => {
+      return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
+  });
+});
+
 
 app.post('/users', (req,res,next) => {
 

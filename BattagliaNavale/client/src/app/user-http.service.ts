@@ -151,14 +151,7 @@ export class UserHttpService {
     }
     return false;
   }
-  is_receiver(rec:string): boolean{
-    const mail = jwtdecode(this.token).mail;
-      if ( mail === rec ) {
-           return true;
-      }
-    
-    return false;
-  }
+ 
   
 
 }

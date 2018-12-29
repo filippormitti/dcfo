@@ -10,6 +10,9 @@ export interface User extends mongoose.Document {
     roles: string[],
     salt: string,
     digest: string,
+    win:number,
+    lost:number,
+    played:number,
     setPassword: (pwd:string)=>void,
     validatePassword: (pwd:string)=>boolean,
     hasAdminRole: ()=>boolean,
@@ -38,7 +41,19 @@ var userSchema = new mongoose.Schema( {
     },
     digest:  {
         type: mongoose.SchemaTypes.String,
-        required: false 
+        required: false ,
+        win: {
+            type: mongoose.SchemaTypes.Number,
+            required: false
+        },
+        lost: {
+            type: mongoose.SchemaTypes.Number,
+            required: false
+        },
+        played: {
+            type: mongoose.SchemaTypes.Number,
+            required: false
+        }
     }
 })
 
