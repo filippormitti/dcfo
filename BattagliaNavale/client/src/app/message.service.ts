@@ -7,7 +7,7 @@ import { mockmessages } from './mock-messages';
 @Injectable()
 export class MessageService {
 
-  private messages = mockmessages;
+  private messages = [];
 
   constructor( ) { }
 
@@ -15,8 +15,12 @@ export class MessageService {
     return of( this.messages );
   }
 
+  get_receivermessages(mail:string): Observable<Message[]> {
+      return of( this.messages );
+  }
+
   post_message( m: Message ): Observable<Message> {
-    m.authormail = 'admin@postmessages.it';
+    
     this.messages.unshift(m);
     return of(m);
   }

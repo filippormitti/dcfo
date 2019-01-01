@@ -17,6 +17,7 @@
  *     /messages        ?tags=               GET         Returns all the posted messages, optionally filtered by tags
  *                      ?skip=n
  *                      ?limit=m
+ *     /messages/receiver -                  GET         Get messager  by receiver
  *     /messages          -                  POST        Post a new message
  *     /messages/:id      -                  DELETE      Delete a message by id
  *     /tags              -                  GET         Get a list of tags
@@ -145,6 +146,14 @@ app.route("/messages").get(auth, (req, res, next) => {
         return next({ statusCode: 404, error: true, errormessage: "Data is not a valid Message" });
     }
 });
+app.get('/messages/:receiver', auth, (req, res, next) => {
+    // req.params.receiver contains the :receiver URL component
+    message.getModel().find({ receiver: req.params.receiver }).then((documents) => {
+        return res.status(200).json(documents);
+    }).catch((reason) => {
+        return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
+    });
+});
 app.delete('/messages/:id', auth, (req, res, next) => {
     // Check player role
     if (!user.newUser(req.user).hasAdminRole()) {
@@ -158,7 +167,7 @@ app.delete('/messages/:id', auth, (req, res, next) => {
     });
 });
 app.get('/users', auth, (req, res, next) => {
-    user.getModel().find({}, { digest: 0, salt: 0 }).then((users) => {
+    user.getModel().find({}, { digest: 0, salt: 0 }).sort({ win: -1 }).then((users) => {
         return res.status(200).json(users);
     }).catch((reason) => {
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
@@ -199,6 +208,7 @@ app.get('/users/:mail', auth, (req, res, next) => {
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
     });
 });
+
 app.get('/renew', auth, (req, res, next) => {
     var tokendata = req.user;
     delete tokendata.iat;

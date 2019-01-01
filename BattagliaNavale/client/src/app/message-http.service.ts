@@ -54,6 +54,13 @@ export class MessageHttpService {
       );
   }
 
+  get_receivermessages(mail:string): Observable<Message[]> {
+       return this.http.get<Message[]>( this.us.url + '/messages/' + mail, this.create_options( {limit: '10', skip: '0'} ) ).pipe(
+        tap( (data) => console.log(JSON.stringify(data))) ,
+        catchError( this.handleError )
+      );
+  }
+
   post_message( m: Message ): Observable<Message> {
     console.log('Posting ' + JSON.stringify(m) );
     return this.http.post<Message>( this.us.url + '/messages', m,  this.create_options() ).pipe(

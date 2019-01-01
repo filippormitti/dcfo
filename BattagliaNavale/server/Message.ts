@@ -8,7 +8,8 @@ export interface Message {
     tags: string[],
     content: string,
     timestamp: Date,
-    authormail: string
+    authormail: string,
+    receiver: string
 }
 
 // User defined type guard
@@ -44,6 +45,10 @@ var messageSchema = new mongoose.Schema( {
         required: true
     },
     authormail: {
+        type: mongoose.SchemaTypes.String,
+        required: true
+    },
+    receiver: {
         type: mongoose.SchemaTypes.String,
         required: true
     }

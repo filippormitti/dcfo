@@ -4,10 +4,10 @@
   </ul>  
  </nav>
 
-<app-message-editor (posted)="get_messages()" ></app-message-editor>
+<app-message-editor (posted)="get_receivermessages(this.us.get_mail())" ></app-message-editor>
 <h2>Messaggi ricevuti</h2>
 <div *ngFor="let message of messages"  > 
-    <div class="card-body" *ngIf="us.is_receiver(message.receiver)">
+    <div class="card-body" >
         <h5 class="card-title"><i class="far fa-envelope"></i>&nbsp;From: {{message.authormail}}</h5>
         <h5 class="card-title"><i class="far fa-envelope"></i>&nbsp;To: {{message.receiver}}</h5>        
         <h6 class="card-subtitle mb-2 text-muted">{{message.timestamp | date}} / {{message.timestamp | date:'shortTime'}}</h6>

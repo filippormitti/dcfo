@@ -17,23 +17,20 @@ export class MessageListComponent implements OnInit {
   constructor( private sio: SocketioService , private ms: MessageService, private us: UserService, private router: Router ) { }
 
   ngOnInit() {
-    this.get_messages();
-    this.sio.connect().subscribe( (m) => {
-      this.get_messages();
-    });
+    this.get_receivermessages(this.us.get_mail());
+   
   }
 
-  public get_messages() {
-    this.ms.get_messages().subscribe(
+  public get_receivermessages(mail:string) {
+       this.ms.get_receivermessages(mail).subscribe(
       ( messages ) => {
         this.messages = messages;
-
       } , (err) => {
 
         // Try to renew the token
         this.us.renew().subscribe( () => {
           // Succeeded
-          this.get_messages();
+          this.get_receivermessages(this.us.get_mail());
         }, (err2) => {
           // Error again, we really need to logout
           this.logout();
