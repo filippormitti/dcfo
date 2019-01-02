@@ -228,3 +228,4 @@ Player.prototype.createShips = function() {
 };
 
 module.exports = Player;
+}

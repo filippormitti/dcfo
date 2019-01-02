@@ -152,3 +152,26 @@ BattleshipGame.prototype.getGrid = function(player, hideShips) {
 };
 
 module.exports = BattleshipGame;
+
+function getSchema() { return userSchema; }
+exports.getSchema = getSchema;
+
+// Mongoose Model
+var gameModel;  // This is not exposed outside the model
+function getModel(){ 
+    if( !gameModel ) {
+        gameModel = mongoose.model('Game', getSchema() )
+    }
+    return gameModel;
+}
+
+function newGame( data ){
+    var _gamemodel = getModel();
+    var game = new _gamemodel( data );
+
+    // TODO costructor to test - if it does not work, try method start
+    debugger;
+    game.start(data.idPlayer1, data.idPlayer2);
+
+    return game;
+}
