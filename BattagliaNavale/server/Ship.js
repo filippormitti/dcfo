@@ -1,3 +1,35 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const mongoose = require("mongoose");
+
+var shipSchema = new mongoose.Schema( {
+  x: {
+      type: [mongoose.SchemaTypes.Number],
+      required: false
+  },
+  y: {
+      type: mongoose.SchemaTypes.Number,
+      required: false,
+  },
+  size:  {
+      type: mongoose.SchemaTypes.String,
+      required: false
+  },
+  hits:  {
+      type: mongoose.SchemaTypes.String,
+      required: false
+  },
+  horizontal:  {
+      type: mongoose.SchemaTypes.Boolean,
+      required: false
+  },
+})
+
+
+
+
+
+
 /**
  * Ship constructor
  * @param {Number} size
