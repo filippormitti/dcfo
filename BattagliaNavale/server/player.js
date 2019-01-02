@@ -1,6 +1,25 @@
 var Ship = require('./ship.js');
 var Settings = require('./settings.js');
 
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const mongoose = require("mongoose");
+var playerSchema = new mongoose.Schema( {
+  shots: {
+      type: [mongoose.SchemaTypes.Number],
+      required: false
+  },
+  shipGrid: {
+      type: [mongoose.SchemaTypes.Number],
+      required: false,
+  },
+  ships:  {
+      type: [mongoose.SchemaTypes.String],
+      required: false
+  },
+})
+
+
 /**
  * Player constructor
  * @param {type} id Socket ID

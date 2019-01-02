@@ -2,6 +2,29 @@ var Player = require('./player.js');
 var Settings = require('./settings.js');
 var GameStatus = require('./gameStatus.js');
 
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const mongoose = require("mongoose");
+
+var gameSchema = new mongoose.Schema( {
+  currentPlayer: {
+      type: mongoose.SchemaTypes.Number,
+      required: false
+  },
+  winningPlayer: {
+      type: mongoose.SchemaTypes.Number,
+      required: false,
+  },
+  gameStatus:  {
+      type: mongoose.SchemaTypes.String,
+      required: true
+  },
+  players:  {
+      type: [mongoose.SchemaTypes.String],
+      required: false
+  },
+})
+
 /**
  * BattleshipGame constructor
  * @param {type} id Game ID
