@@ -9,6 +9,7 @@ export interface Ship extends mongoose.Document {
     hits: number,
     horizontal: boolean,
     // methods
+    start: (size:number)=>number,
     isSunk: ()=>boolean,
 }
 
@@ -48,6 +49,13 @@ function Ship(size) {
     this.hits = 0;
     this.horizontal = false;
 }
+shipSchema.methods.start = function(size){
+    this.x = 0;
+    this.y = 0;
+    this.size = size;
+    this.hits = 0;
+    this.horizontal = false;
+};
 
 /**
  * Check if ship is sunk
@@ -75,6 +83,10 @@ export function getModel() : mongoose.Model< Ship >  { // Return Model as single
 export function newShip( data ): Ship {
     var _shipmodel = getModel();
     var ship = new _shipmodel( data );
+
+    // TODO costructor to test - if it does not work, try method start
+    debugger;
+    ship.start(data.size);
 
     return ship;
 }

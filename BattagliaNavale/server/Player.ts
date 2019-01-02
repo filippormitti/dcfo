@@ -7,6 +7,7 @@ export interface Player extends mongoose.Document {
     shipGrid: number[],
     ships: string[],
     // methods
+    start: ()=>void,
     shoot: (gridIndex:number)=>boolean,
     getSunkShips: ()=>string[],
     getShipsLeft: ()=>number,
@@ -34,7 +35,7 @@ var playerSchema = new mongoose.Schema( {
 
 
 
-var Ship = require('./ship.js');
+var Ship = require('./Ship.js');
 var Settings = require('./settings.js');
 
 /**
@@ -57,6 +58,19 @@ function Player(id) { // ************************************************ TODO c
         // Random placement of ships failed. Use fallback layout (should rarely happen).
         this.ships = [];
         this.createShips();
+    }
+};
+playerSchema.methods.start = function() {
+    var i;
+
+    // this.id = id;
+    this.shots = Array(Settings.gridRows * Settings.gridCols);
+    this.shipGrid = Array(Settings.gridRows * Settings.gridCols);
+    this.ships = [];
+
+    for (i = 0; i < Settings.gridRows * Settings.gridCols; i++) {
+        this.shots[i] = 0;
+        this.shipGrid[i] = -1;
     }
 };
 
@@ -230,6 +244,10 @@ export function getModel() : mongoose.Model< Player >  { // Return Model as sing
 export function newPlayer( data ): Player {
     var _playermodel = getModel();
     var player = new _playermodel( data );
+
+    // TODO costructor to test - if it does not work, try method start
+    debugger;
+    player.start();
 
     return player;
 }

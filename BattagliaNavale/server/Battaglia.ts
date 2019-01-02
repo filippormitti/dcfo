@@ -87,6 +87,15 @@ import * as message from './Message';
 import { User } from './User';
 import * as user from './User';
 
+import { Game } from './Game';
+import * as game from './Game';
+
+import { Player } from './Player';
+import * as player from './Player';
+
+import { Ship } from './Ship';
+import * as ship from './Ship';
+
 import express = require('express');
 import bodyparser = require('body-parser');      // body-parser middleware is used to parse the request body and
                                                  // directly provide a Javascript object if the "Content-type" is
@@ -272,6 +281,14 @@ app.get('/renew', auth, (req,res,next) => {
   return res.status(200).json({ error: false, errormessage: "", token: token_signed });
 });
 
+//***************************** TODO test end point **********************************************
+app.get('/games', auth, (req, res) => {
+    console.log("end point /games, request=" + req);
+    debugger;
+   game.getModel();
+
+   return game;
+});
 
 
 // Configure HTTP basic authentication strategy 

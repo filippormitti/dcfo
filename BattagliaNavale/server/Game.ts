@@ -2,12 +2,13 @@ import mongoose = require('mongoose');
 
 export interface Game extends mongoose.Document {
     // fields
-  readonly id: mongoose.Schema.Types.ObjectId,
+    readonly id: mongoose.Schema.Types.ObjectId,
     currentPlayer: number,
     winningPlayer: number,
     gameStatus: string,
     players: string[],
     // methods
+    start: (idPlayer1:string, idPlayer2:string)=>string,
     getPlayerId: (player:number)=>string,
     getWinnerId: ()=>string,
     getLoserId: ()=>string,
@@ -40,7 +41,7 @@ var gameSchema = new mongoose.Schema( {
 
 
 
-var Player = require('./player.js');
+var Player = require('./Player.js');
 var Settings = require('./settings.js');
 var GameStatus = require('./gameStatus.js');
 
@@ -51,12 +52,20 @@ var GameStatus = require('./gameStatus.js');
  * @param {type} idPlayer2 Socket ID of player 2
  */
 function BattleshipGame(id, idPlayer1, idPlayer2) {     //**************************************** TODO non può rimanere così
-  this.id = id;
+  // this.id = id;
   this.currentPlayer = Math.floor(Math.random() * 2);
   this.winningPlayer = null;
   this.gameStatus = GameStatus.inProgress;
   this.players = [new Player(idPlayer1), new Player(idPlayer2)];
-}
+};
+
+gameSchema.methods.start = function (idPlayer1, idPlayer2) {
+    // this.id = id; // mongoose assignes an id automatically
+    this.currentPlayer = Math.floor(Math.random() * 2);
+    this.winningPlayer = null;
+    this.gameStatus = GameStatus.inProgress;
+    this.players = [new Player(idPlayer1), new Player(idPlayer2)];
+};
 
 /**
  * Get socket ID of player
@@ -180,6 +189,10 @@ export function getModel() : mongoose.Model< Game >  { // Return Model as single
 export function newGame( data ): Game {
     var _gamemodel = getModel();
     var game = new _gamemodel( data );
+
+    // TODO costructor to test - if it does not work, try method start
+    debugger;
+    game.start(data.idPlayer1, data.idPlayer2);
 
     return game;
 }
