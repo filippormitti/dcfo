@@ -17,11 +17,10 @@
  *     /messages        ?tags=               GET         Returns all the posted messages, optionally filtered by tags
  *                      ?skip=n
  *                      ?limit=m
- *     /messages/receiver -                  GET         Get messager  by receiver
  *     /messages          -                  POST        Post a new message
  *     /messages/:id      -                  DELETE      Delete a message by id
  *     /tags              -                  GET         Get a list of tags
- *     /users/:id         -                  DELETE      Delete a message by id
+ *
  *     /users             -                  GET         List all users
  *     /users/:mail       -                  GET         Get user info by mail
  *     /users             -                  POST        Add a new user
@@ -79,6 +78,7 @@ colors.enabled = true;
 const mongoose = require("mongoose");
 const message = require("./Message");
 const user = require("./User");
+const game = require("./Game");
 const express = require("express");
 const bodyparser = require("body-parser"); // body-parser middleware is used to parse the request body and
 // directly provide a Javascript object if the "Content-type" is
@@ -105,7 +105,7 @@ app.use(bodyparser.json());
 // Add API routes to express application
 //
 app.get("/", (req, res) => {
-    res.status(200).json({ api_version: "1.0", endpoints: ["/messages", "/tags", "/users", "/login"] }); // json method sends a JSON response (setting the correct Content-Type) to the client
+    res.status(200).json({ api_version: "1.0", endpoints: ["/messages", "/tags", "/users", "/login", "/games"] }); // json method sends a JSON response (setting the correct Content-Type) to the client
 });
 app.get("/tags", auth, (req, res, next) => {
     message.getModel().distinct("tags").then((taglist) => {
@@ -156,7 +156,7 @@ app.get('/messages/:receiver', auth, (req, res, next) => {
 });
 app.delete('/messages/:id', auth, (req, res, next) => {
     // Check player role
-    if (!user.newUser(req.user).hasAdminRole()) {
+    if (!user.newUser(req.user).hasPlayerRole()) {
         return next({ statusCode: 404, error: true, errormessage: "Unauthorized: user is not a Player" });
     }
     // req.params.id contains the :id URL component
@@ -185,7 +185,6 @@ app.delete('/users/:id', auth, (req, res, next) => {
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
     });
 });
-
 app.post('/users', (req, res, next) => {
     var u = user.newUser(req.body);
     if (!req.body.password) {
@@ -208,7 +207,6 @@ app.get('/users/:mail', auth, (req, res, next) => {
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
     });
 });
-
 app.get('/renew', auth, (req, res, next) => {
     var tokendata = req.user;
     delete tokendata.iat;
@@ -217,16 +215,24 @@ app.get('/renew', auth, (req, res, next) => {
     var token_signed = jsonwebtoken.sign(tokendata, process.env.JWT_SECRET, { expiresIn: '1h' });
     return res.status(200).json({ error: false, errormessage: "", token: token_signed });
 });
-
-app.get('/games', auth, (req, res) => {
-    console.log("end point /games, request=" + req);
-    debugger;
-   game.getModel();
-
-   return game;
+//***************************** TODO test end point **********************************************
+app.post('/games', (req, res, next) => {
+    var g = game.newGame(req.body);
+    g.save().then((data) => {
+        return res.status(200).json({ error: false, errormessage: "", id: data._id });
+    }).catch((reason) => {
+        if (reason.code === 11000)
+            return next({ statusCode: 404, error: true, errormessage: "game already exists" });
+        return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason.errmsg });
+    });
 });
-
-
+app.get('/games/', auth, (req, res, next) => {
+    game.getModel().find({}).then((games) => {
+        return res.status(200).json(games);
+    }).catch((reason) => {
+        return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
+    });
+});
 // Configure HTTP basic authentication strategy 
 // trough passport middleware.
 // NOTE: Always use HTTPS with Basic Authentication
@@ -283,10 +289,7 @@ mongoose.connect('mongodb://localhost:27017/Battaglia').then(function onconnecte
     console.log("Connected to MongoDB");
     var u = user.newUser({
         username: "admin",
-        mail: "admin@postmessages.it",
-        win:0,
-        lost:0,
-        played:0
+        mail: "admin@postmessages.it"
     });
     u.setAdmin();
     u.setPlayer();
@@ -303,7 +306,7 @@ mongoose.connect('mongodb://localhost:27017/Battaglia').then(function onconnecte
                     content: "Post 1",
                     timestamp: new Date(),
                     authormail: u.mail,
-                    receiver:u.mail
+                    receiver: u.mail
                 });
                 var m2 = message
                     .getModel()
@@ -311,7 +314,8 @@ mongoose.connect('mongodb://localhost:27017/Battaglia').then(function onconnecte
                     tags: ["Tag1", "Tag5"],
                     content: "Post 2",
                     timestamp: new Date(),
-                    authormail: u.mail
+                    authormail: u.mail,
+                    receiver: u.mail
                 });
                 var m3 = message
                     .getModel()
@@ -320,7 +324,7 @@ mongoose.connect('mongodb://localhost:27017/Battaglia').then(function onconnecte
                     content: "Post 3",
                     timestamp: new Date(),
                     authormail: u.mail,
-                    receiver:u.mail
+                    receiver: u.mail
                 });
                 Promise.all([m1, m2, m3])
                     .then(function () {

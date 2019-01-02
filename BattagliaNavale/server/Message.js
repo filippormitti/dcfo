@@ -8,7 +8,7 @@ const mongoose = require("mongoose");
 // A better approach is to use JSON schema
 //
 function isMessage(arg) {
-    return arg && arg.content && typeof (arg.content) == 'string' && arg.tags && Array.isArray(arg.tags) && arg.timestamp && arg.timestamp instanceof Date && arg.authormail && typeof (arg.authormail) == 'string'&& arg.receiver && typeof (arg.receiver) == 'string';
+    return arg && arg.content && typeof (arg.content) == 'string' && arg.tags && Array.isArray(arg.tags) && arg.timestamp && arg.timestamp instanceof Date && arg.authormail && typeof (arg.authormail) == 'string' && arg.receiver && typeof (arg.receiver) == 'string';
 }
 exports.isMessage = isMessage;
 // We use Mongoose to perform the ODM between our application and

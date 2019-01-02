@@ -1,8 +1,8 @@
 {
-    "name": "postmessages",
-    "main": "postmessages",
+    "name": "battaglia",
+    "main": "battaglia",
     "version": "0.0.1",
-    "author": "Filippo Bergamasco",
+    "author": "Diego",
     "dependencies": {
         "body-parser": "1.18.2",
         "colors": "1.2.1",
@@ -29,7 +29,7 @@
     },
     "scripts": {
         "compile": "tsc",
-        "start": "concurrently \"mongod --dbpath ./data\" \"sleep 2 && node postmessages\""
+        "start": "concurrently \"mongod --dbpath ./data\" \"sleep 2 && node battaglia\""
     },
     "private": true
 }

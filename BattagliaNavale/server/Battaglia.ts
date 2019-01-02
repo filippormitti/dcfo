@@ -135,7 +135,7 @@ app.use( bodyparser.json() );
 
 app.get("/", (req,res) => {
 
-    res.status(200).json( { api_version: "1.0", endpoints: [ "/messages", "/tags", "/users", "/login" ] } ); // json method sends a JSON response (setting the correct Content-Type) to the client
+    res.status(200).json( { api_version: "1.0", endpoints: [ "/messages", "/tags", "/users", "/login" ,"/games"] } ); // json method sends a JSON response (setting the correct Content-Type) to the client
 
 });
 
@@ -282,12 +282,28 @@ app.get('/renew', auth, (req,res,next) => {
 });
 
 //***************************** TODO test end point **********************************************
-app.get('/games', auth, (req, res) => {
-    console.log("end point /games, request=" + req);
-    debugger;
-   game.getModel();
+app.post('/games', (req,res,next) => {
 
-   return game;
+  var g = game.newGame( req.body );
+  
+  g.save().then( (data) => {
+    return res.status(200).json({ error: false, errormessage: "", id: data._id });
+  }).catch( (reason) => {
+    if( reason.code === 11000 )
+      return next({statusCode:404, error:true, errormessage: "game already exists"} );
+    return next({ statusCode:404, error: true, errormessage: "DB error: "+reason.errmsg });
+  })
+
+});
+
+app.get('/games/', auth, (req,res,next) => {
+
+game.getModel().find({}).then( (games)=> {
+  return res.status(200).json( games );
+}).catch( (reason) => {
+  return next({ statusCode:404, error: true, errormessage: "DB error: "+reason });
+})
+
 });
 
 
@@ -367,11 +383,11 @@ app.use( (req,res,next) => {
 
 // Connect to mongodb and launch the HTTP server trough Express
 //
-mongoose.connect( 'mongodb://localhost:27017/postmessages' ).then( 
+mongoose.connect( 'mongodb://localhost:27017/Battaglia' ).then( 
     function onconnected() {
 
         console.log("Connected to MongoDB");
-
+        
         var u = user.newUser( {
           username: "admin",
           mail: "admin@postmessages.it"
@@ -392,7 +408,8 @@ mongoose.connect( 'mongodb://localhost:27017/postmessages' ).then(
                           tags: ["Tag1", "Tag2", "Tag3"],
                           content: "Post 1",
                           timestamp: new Date(),
-                          authormail: u.mail
+                          authormail: u.mail,
+                          receiver: u.mail
                         });
                       var m2 = message
                         .getModel()
@@ -400,7 +417,8 @@ mongoose.connect( 'mongodb://localhost:27017/postmessages' ).then(
                           tags: ["Tag1", "Tag5"],
                           content: "Post 2",
                           timestamp: new Date(),
-                          authormail: u.mail
+                          authormail: u.mail,
+                          receiver: u.mail
                         });
                       var m3 = message
                         .getModel()
@@ -408,7 +426,8 @@ mongoose.connect( 'mongodb://localhost:27017/postmessages' ).then(
                           tags: ["Tag6", "Tag10"],
                           content: "Post 3",
                           timestamp: new Date(),
-                          authormail: u.mail
+                          authormail: u.mail,
+                          receiver: u.mail
                         });
 
                       Promise.all([m1, m2, m3])

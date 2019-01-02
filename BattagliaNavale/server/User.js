@@ -3,8 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose = require("mongoose");
 const crypto = require("crypto");
 var userSchema = new mongoose.Schema({
-   
-     username: {
+    username: {
         type: mongoose.SchemaTypes.String,
         required: true
     },
@@ -23,19 +22,19 @@ var userSchema = new mongoose.Schema({
     },
     digest: {
         type: mongoose.SchemaTypes.String,
-        required: false
-    },
+        required: false,
         win: {
-        type: mongoose.SchemaTypes.Number,
-        required: false
-    },
-    lost: {
-        type: mongoose.SchemaTypes.Number,
-        required: false
-    },
-    played: {
-        type: mongoose.SchemaTypes.Number,
-        required: false
+            type: mongoose.SchemaTypes.Number,
+            required: false
+        },
+        lost: {
+            type: mongoose.SchemaTypes.Number,
+            required: false
+        },
+        played: {
+            type: mongoose.SchemaTypes.Number,
+            required: false
+        }
     }
 });
 // Here we add some methods to the user Schema

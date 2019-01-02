@@ -2,7 +2,7 @@ import mongoose = require('mongoose');
 
 export interface Game extends mongoose.Document {
     // fields
-    readonly id: mongoose.Schema.Types.ObjectId,
+    readonly _id: mongoose.Schema.Types.ObjectId,
     currentPlayer: number,
     winningPlayer: number,
     gameStatus: string,
@@ -171,7 +171,7 @@ gameSchema.methods.getGrid = function(player, hideShips) {
   };
 };
 
-module.exports = BattleshipGame; //*************************************************************** TODO credo si possa rimuovere
+ //*************************************************************** TODO credo si possa rimuovere
 
 
 
@@ -191,8 +191,8 @@ export function newGame( data ): Game {
     var game = new _gamemodel( data );
 
     // TODO costructor to test - if it does not work, try method start
-    debugger;
-    game.start(data.idPlayer1, data.idPlayer2);
+   // debugger;
+  //  game.start(data.idPlayer1, data.idPlayer2);
 
     return game;
 }
