@@ -39,7 +39,7 @@ function BattleshipGame(id, idPlayer1, idPlayer2) {
   this.players = [new Player(idPlayer1), new Player(idPlayer2)];
 };
 
-BattleshipGame.prototype.start = function(idPlayer1, idPlayer2) {
+gameSchema.methods.start = function (idPlayer1, idPlayer2) {
   // this.id = id; // mongoose assignes an id automatically
   this.currentPlayer = Math.floor(Math.random() * 2);
   this.winningPlayer = null;
@@ -52,7 +52,7 @@ BattleshipGame.prototype.start = function(idPlayer1, idPlayer2) {
  * @param {type} player
  * @returns {undefined}
  */
-BattleshipGame.prototype.getPlayerId = function(player) {
+gameSchema.methods.getPlayerId = function(player) {
   return this.players[player].id;
 };
 
@@ -60,18 +60,19 @@ BattleshipGame.prototype.getPlayerId = function(player) {
  * Get socket ID of winning player
  * @returns {BattleshipGame.prototype@arr;players@pro;id}
  */
-BattleshipGame.prototype.getWinnerId = function() {
+gameSchema.methods.getWinnerId = function() {
   if(this.winningPlayer === null) {
     return null;
   }
   return this.players[this.winningPlayer].id;
 };
 
+
 /**
  * Get socket ID of losing player
  * @returns {BattleshipGame.prototype@arr;players@pro;id}
  */
-BattleshipGame.prototype.getLoserId = function() {
+gameSchema.methods.getLoserId = function() {
   if(this.winningPlayer === null) {
     return null;
   }
@@ -82,7 +83,7 @@ BattleshipGame.prototype.getLoserId = function() {
 /**
  * Switch turns
  */
-BattleshipGame.prototype.switchPlayer = function() {
+gameSchema.methods.switchPlayer = function() {
   this.currentPlayer = this.currentPlayer === 0 ? 1 : 0;
 };
 
@@ -90,7 +91,7 @@ BattleshipGame.prototype.switchPlayer = function() {
  * Abort game
  * @param {Number} player Player who made the request
  */
-BattleshipGame.prototype.abortGame = function(player) {
+gameSchema.methods.abortGame = function(player) {
   // give win to opponent
   this.gameStatus = GameStatus.gameOver;
   this.winningPlayer = player === 0 ? 1 : 0;
@@ -101,7 +102,7 @@ BattleshipGame.prototype.abortGame = function(player) {
  * @param {Object} position with x and y
  * @returns {boolean} True if shot was valid
  */
-BattleshipGame.prototype.shoot = function(position) {
+gameSchema.methods.shoot = function(position) {
   var opponent = this.currentPlayer === 0 ? 1 : 0,
       gridIndex = position.y * Settings.gridCols + position.x;
 
@@ -130,7 +131,7 @@ BattleshipGame.prototype.shoot = function(position) {
  * @param {Number} gridOwner Player whose grid state to update
  * @returns {BattleshipGame.prototype.getGameState.battleshipGameAnonym$0}
  */
-BattleshipGame.prototype.getGameState = function(player, gridOwner) {
+gameSchema.methods.getGameState = function(player, gridOwner) {
   return {
     turn: this.currentPlayer === player,                 // is it this player's turn?
     gridIndex: player === gridOwner ? 0 : 1,             // which client grid to update (0 = own, 1 = opponent)
@@ -144,16 +145,16 @@ BattleshipGame.prototype.getGameState = function(player, gridOwner) {
  * @param {type} hideShips Hide unsunk ships
  * @returns {BattleshipGame.prototype.getGridState.battleshipGameAnonym$0}
  */
-BattleshipGame.prototype.getGrid = function(player, hideShips) {
+gameSchema.methods.getGrid = function(player, hideShips) {
   return {
     shots: this.players[player].shots,
     ships: hideShips ? this.players[player].getSunkShips() : this.players[player].ships
   };
 };
 
-module.exports = BattleshipGame;
 
-function getSchema() { return userSchema; }
+
+function getSchema() { return gameSchema; }
 exports.getSchema = getSchema;
 
 // Mongoose Model
@@ -169,9 +170,10 @@ function newGame( data ){
     var _gamemodel = getModel();
     var game = new _gamemodel( data );
 
-    // TODO costructor to test - if it does not work, try method start
-    debugger;
+  // TODO costructor to test - if it does not work, try method start
+   debugger;
     game.start(data.idPlayer1, data.idPlayer2);
 
     return game;
 }
+module.exports = BattleshipGame;

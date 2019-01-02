@@ -217,6 +217,16 @@ app.get('/renew', auth, (req, res, next) => {
     var token_signed = jsonwebtoken.sign(tokendata, process.env.JWT_SECRET, { expiresIn: '1h' });
     return res.status(200).json({ error: false, errormessage: "", token: token_signed });
 });
+
+app.get('/games', auth, (req, res) => {
+    console.log("end point /games, request=" + req);
+    debugger;
+   game.getModel();
+
+   return game;
+});
+
+
 // Configure HTTP basic authentication strategy 
 // trough passport middleware.
 // NOTE: Always use HTTPS with Basic Authentication
