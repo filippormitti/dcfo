@@ -4,11 +4,14 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 
 
+
 import { AppComponent } from './app.component';
 import { MessageEditorComponent } from './message-editor/message-editor.component';
 import { MessageListComponent } from './message-list/message-list.component';
 
 // Services
+import { PartiteService } from './partite.service';
+import { PartiteHttpService } from './partite-http.service';
 import { MessageService } from './message.service';
 import { MessageHttpService } from './message-http.service';
 import { UserService } from './user.service';
@@ -19,6 +22,7 @@ import { UserSignupComponent } from './user-signup/user-signup.component';
 import { SocketioService } from './socketio.service';
 import { MenuComponent } from './menu/menu.component';
 import { UserListComponent } from './user-list/user-list.component';
+import { GameListComponent } from './game-list/game-list.component';
 
 
 @NgModule({
@@ -29,7 +33,8 @@ import { UserListComponent } from './user-list/user-list.component';
     UserLoginComponent,
     UserSignupComponent,
     MenuComponent,
-    UserListComponent
+    UserListComponent,
+    GameListComponent
   ],
   imports: [
     BrowserModule,
@@ -39,6 +44,7 @@ import { UserListComponent } from './user-list/user-list.component';
   ],
   providers: [
     {provide: UserService, useClass: UserHttpService },
+    {provide: PartiteService, useClass: PartiteHttpService },
     {provide: SocketioService, useClass: SocketioService },
     {provide: MessageService, useClass: MessageHttpService /* Here we can select the specifc service instance */}
   ],
