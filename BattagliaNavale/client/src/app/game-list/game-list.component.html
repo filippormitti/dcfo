@@ -3,11 +3,17 @@
    <li><a routerLink="/menu">Torna al menu</a></li>
   </ul>  
  </nav>
-
+ <div class="game-body" >
+  <div class="btn-crea" (click)="Create_game(us.get_id())" >
+      <button class="btn-crea">Crea nuova partita</button>  
+    </div>  
 
 <h2>Elenco partite</h2>
 <div *ngFor="let game of games"  > 
     <div class="game-body" >
+        <div class="btn-partecipa" (click)="Join_user(game._id,us.get_id())" >
+            <button class="btn-partecipa">Partecipa</button>  
+          </div>  
         <h5 class="game-title">ID {{game._id}}</h5>
         <h5 class="game-title">Stato: {{game.gameStatus}}</h5>        
             </div>

@@ -4,6 +4,6 @@ export interface Game {
     currentPlayer: number;
     winningPlayer: string;
     players:Player[];
-    gameStatus: number
+    gameStatus: string;
    
 }

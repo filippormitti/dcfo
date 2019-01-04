@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { PartiteService } from '../partite.service';
 import { Game} from '../Game';
 import { UserService } from '../user.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRouteSnapshot } from '@angular/router';
 import { SocketioService } from '../socketio.service';
 
 @Component({
@@ -13,11 +13,12 @@ import { SocketioService } from '../socketio.service';
 export class GameListComponent implements OnInit {
 
   private games: Game[] = [];
-
+  
   constructor( private sio: SocketioService , private gm:PartiteService, private us: UserService, private router: Router ) { }
 
   ngOnInit() {
     this.get_listgames();
+   
    
   }
 
@@ -38,7 +39,20 @@ export class GameListComponent implements OnInit {
       }
     );
   }
+
+  public Join_user( idgame: number,idus:number ) {
+    
+ console.log('sto passando IDgame: ' + idgame + ' e IDuser' + idus );
+ 
+  }
   
+  public Create_game( idus:number ) {
+    
+    console.log('sto generando una nuova partita con IDuser' + idus );
+    
+     }
+  
+
   logout() {
     this.us.logout();
     this.router.navigate(['/']);
