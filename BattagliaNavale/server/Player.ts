@@ -1,13 +1,15 @@
 import mongoose = require('mongoose');
+import * as Ship from './Ship';
 
 export interface Player extends mongoose.Document {
     // fields
-    readonly id: mongoose.Schema.Types.ObjectId,
+    readonly _id: mongoose.Schema.Types.ObjectId,
+    userId: string,
     shots: number[],
     shipGrid: number[],
     ships: string[],
     // methods
-    start: ()=>void,
+    start: (user1Id)=>void,
     shoot: (gridIndex:number)=>boolean,
     getSunkShips: ()=>string[],
     getShipsLeft: ()=>number,
@@ -18,6 +20,10 @@ export interface Player extends mongoose.Document {
 }
 
 var playerSchema = new mongoose.Schema( {
+    userId: {
+        type: mongoose.SchemaTypes.String,
+        required: false
+    },
     shots: {
         type: [mongoose.SchemaTypes.Number],
         required: false
@@ -35,43 +41,47 @@ var playerSchema = new mongoose.Schema( {
 
 
 
-var Ship = require('./Ship.js');
+// var Ship = require('./Ship.js');
 var Settings = require('./settings.js');
 
-/**
- * Player constructor
- * @param {type} id Socket ID
- */
-function Player(id) { // ************************************************ TODO come convertire?
-    var i;
-    this.id = id;
-    this.shots = Array(Settings.gridRows * Settings.gridCols);
-    this.shipGrid = Array(Settings.gridRows * Settings.gridCols);
+// /**
+//  * Player constructor
+//  * @param {type} id Socket ID
+//  */
+// function Player(id) {
+//     var i;
+//     console.log('*******************************************costruttore Player');
+//     this.id = id;
+//     this.shots = Array(Settings.gridRows * Settings.gridCols);
+//     this.shipGrid = Array(Settings.gridRows * Settings.gridCols);
+//     this.ships = [];
+//
+//     for(i = 0; i < Settings.gridRows * Settings.gridCols; i++) {
+//         this.shots[i] = 0;
+//         this.shipGrid[i] = -1;
+//     }
+//
+//     // if(!this.createRandomShips()) {
+//     //     // Random placement of ships failed. Use fallback layout (should rarely happen).
+//     //     this.ships = [];
+//     //     this.createShips();
+//     // }
+// };
+playerSchema.methods.start = function(userId) {
+    console.log('playerSchema.methods.start - start');
+
+    this.userId = userId;
+    this.shots = [];/*Array(Settings.gridRows * Settings.gridCols);*/
+    this.shipGrid = [];/*Array(Settings.gridRows * Settings.gridCols);*/
     this.ships = [];
 
-    for(i = 0; i < Settings.gridRows * Settings.gridCols; i++) {
-        this.shots[i] = 0;
-        this.shipGrid[i] = -1;
-    }
-
-    if(!this.createRandomShips()) {
-        // Random placement of ships failed. Use fallback layout (should rarely happen).
-        this.ships = [];
-        this.createShips();
-    }
-};
-playerSchema.methods.start = function() {
     var i;
-
-    // this.id = id;
-    this.shots = Array(Settings.gridRows * Settings.gridCols);
-    this.shipGrid = Array(Settings.gridRows * Settings.gridCols);
-    this.ships = [];
-
     for (i = 0; i < Settings.gridRows * Settings.gridCols; i++) {
         this.shots[i] = 0;
         this.shipGrid[i] = -1;
     }
+
+    console.log('playerSchema.methods.start - end');
 };
 
 /**
@@ -210,7 +220,7 @@ playerSchema.methods.createShips = function() {
         horizontal = [false, true, false, false, true];
 
     for(shipIndex = 0; shipIndex < Settings.ships.length; shipIndex++) {
-        ship = new Ship(Settings.ships[shipIndex]);
+        ship = Ship.newShip(Settings.ships[shipIndex]);
         ship.horizontal = horizontal[shipIndex];
         ship.x = x[shipIndex];
         ship.y = y[shipIndex];
@@ -226,9 +236,6 @@ playerSchema.methods.createShips = function() {
     }
 };
 
-module.exports = Player; //************************************************************** TODO credo si possa rimuovere
-
-
 
 export function getSchema() { return playerSchema; }
 
@@ -241,13 +248,18 @@ export function getModel() : mongoose.Model< Player >  { // Return Model as sing
     return playerModel;
 }
 
-export function newPlayer( data ): Player {
+export function newPlayer( user1Id ): Player {
+    console.log('export function newPlayer - start');
+    console.log('user1Id='+user1Id);
+
     var _playermodel = getModel();
-    var player = new _playermodel( data );
+    var player = new _playermodel();
+    player.start(user1Id);
 
-    // TODO costructor to test - if it does not work, try method start
-    debugger;
-    player.start();
+    // console.log('save starting...');
+    // player.save().then();
+    // console.log('save end');
 
+    console.log('export function newPlayer - end');
     return player;
 }

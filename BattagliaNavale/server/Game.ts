@@ -1,14 +1,16 @@
 import mongoose = require('mongoose');
+import * as Player from './Player';
 
 export interface Game extends mongoose.Document {
     // fields
     readonly _id: mongoose.Schema.Types.ObjectId,
     currentPlayer: number,
     winningPlayer: number,
-    gameStatus: string,
-    players: string[],
+    gameStatus: number,
+    players: any,
     // methods
-    start: (idPlayer1:string, idPlayer2:string)=>string,
+    start: (userId:string)=>void,
+    join: (userId:string)=>void,
     getPlayerId: (player:number)=>string,
     getWinnerId: ()=>string,
     getLoserId: ()=>string,
@@ -29,8 +31,8 @@ var gameSchema = new mongoose.Schema( {
         required: false,
     },
     gameStatus:  {
-        type: mongoose.SchemaTypes.String,
-        required: true
+        type: mongoose.SchemaTypes.Number,
+        required: false
     },
     players:  {
         type: [mongoose.SchemaTypes.String],
@@ -41,30 +43,49 @@ var gameSchema = new mongoose.Schema( {
 
 
 
-var Player = require('./Player.js');
+// var Player = require('./Player.js');
 var Settings = require('./settings.js');
 var GameStatus = require('./gameStatus.js');
 
-/**
- * BattleshipGame constructor
- * @param {type} id Game ID
- * @param {type} idPlayer1 Socket ID of player 1
- * @param {type} idPlayer2 Socket ID of player 2
- */
-function BattleshipGame(id, idPlayer1, idPlayer2) {     //**************************************** TODO non può rimanere così
-  // this.id = id;
-  this.currentPlayer = Math.floor(Math.random() * 2);
-  this.winningPlayer = null;
-  this.gameStatus = GameStatus.inProgress;
-  this.players = [new Player(idPlayer1), new Player(idPlayer2)];
-};
+// /**
+//  * BattleshipGame constructor
+//  * @param {type} id Game ID
+//  * @param {type} idPlayer1 Socket ID of player 1
+//  * @param {type} idPlayer2 Socket ID of player 2
+//  */
+// function BattleshipGame(id, idPlayer1, idPlayer2) {
+//   // this.id = id;
+//   this.currentPlayer = Math.floor(Math.random() * 2);
+//   this.winningPlayer = null;
+//   this.gameStatus = GameStatus.inProgress;
+//   this.players = [new Player(idPlayer1), new Player(idPlayer2)];
+// };
 
-gameSchema.methods.start = function (idPlayer1, idPlayer2) {
-    // this.id = id; // mongoose assignes an id automatically
+gameSchema.methods.start = function (userId) {
+    console.log('gameSchema.methods.start - start');
+
     this.currentPlayer = Math.floor(Math.random() * 2);
     this.winningPlayer = null;
-    this.gameStatus = GameStatus.inProgress;
-    this.players = [new Player(idPlayer1), new Player(idPlayer2)];
+    this.gameStatus = GameStatus.waitingPlayer;
+
+    var player = Player.newPlayer(userId);
+    this.players = [JSON.stringify(player)];
+
+    console.log('gameSchema.methods.start - end');
+};
+
+gameSchema.methods.join = function (userId) {
+    console.log('gameSchema.methods.join - start');
+
+    if (this.players.length < 2){
+        console.log('this.players.length < 2');
+        var player = Player.newPlayer(userId);
+        this.players.push(JSON.stringify(player));
+        this.gameStatus = GameStatus.inProgress;
+        this.save();
+    }
+
+    console.log('gameSchema.methods.join - end');
 };
 
 /**
@@ -186,13 +207,10 @@ export function getModel() : mongoose.Model< Game >  { // Return Model as single
     return gameModel;
 }
 
-export function newGame( data ): Game {
+export function newGame( user1Id ): Game {
     var _gamemodel = getModel();
-    var game = new _gamemodel( data );
-
-    // TODO costructor to test - if it does not work, try method start
-   // debugger;
-  //  game.start(data.idPlayer1, data.idPlayer2);
+    var game = new _gamemodel();
+    game.start(user1Id);
 
     return game;
 }

@@ -102,8 +102,7 @@ var auth = jwt({ secret: process.env.JWT_SECRET });
 app.use(cors());
 // Install the top-level middleware "bodyparser"
 app.use(bodyparser.json());
-// Add API routes to express application
-//
+// Add API routes to express application - API END POINT
 app.get("/", (req, res) => {
     res.status(200).json({ api_version: "1.0", endpoints: ["/messages", "/tags", "/users", "/login", "/games"] }); // json method sends a JSON response (setting the correct Content-Type) to the client
 });
@@ -114,6 +113,7 @@ app.get("/tags", auth, (req, res, next) => {
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
     });
 });
+//***************************** messages *******************************
 app.route("/messages").get(auth, (req, res, next) => {
     var filter = {};
     if (req.query.tags) {
@@ -166,6 +166,7 @@ app.delete('/messages/:id', auth, (req, res, next) => {
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
     });
 });
+//***************************** users *******************************
 app.get('/users', auth, (req, res, next) => {
     user.getModel().find({}, { digest: 0, salt: 0 }).sort({ win: -1 }).then((users) => {
         return res.status(200).json(users);
@@ -215,9 +216,9 @@ app.get('/renew', auth, (req, res, next) => {
     var token_signed = jsonwebtoken.sign(tokendata, process.env.JWT_SECRET, { expiresIn: '1h' });
     return res.status(200).json({ error: false, errormessage: "", token: token_signed });
 });
-//***************************** TODO test end point **********************************************
+//***************************** games *******************************
 app.post('/games', (req, res, next) => {
-    var g = game.newGame(req.body);
+    var g = game.newGame(req.body.user1Id);
     g.save().then((data) => {
         return res.status(200).json({ error: false, errormessage: "", id: data._id });
     }).catch((reason) => {
@@ -226,13 +227,28 @@ app.post('/games', (req, res, next) => {
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason.errmsg });
     });
 });
-app.get('/games/', auth, (req, res, next) => {
-    game.getModel().find({}).then((games) => {
+app.get('/games', auth, (req, res, next) => {
+    game.getModel().find({ 0: req.body.gameStatus }).then((games) => {
         return res.status(200).json(games);
     }).catch((reason) => {
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
     });
 });
+app.get('/games/join', /*auth,*/ (req, res, next) => {
+    console.log('get /games/join - reqBody=' + JSON.stringify(req.body));
+    console.log('passa1');
+    game.getModel().findOne({ _id: req.body.gameId }).then((matchedGame) => {
+        console.log('passa2');
+        console.log('matchedGame=' + matchedGame);
+        matchedGame.join(req.body.userId);
+        return res.status(200).json(true);
+    }).catch((reason) => {
+        console.log('passa3');
+        return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
+    });
+    console.log('passa4');
+});
+//***************************** auth *******************************
 // Configure HTTP basic authentication strategy 
 // trough passport middleware.
 // NOTE: Always use HTTPS with Basic Authentication

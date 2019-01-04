@@ -1,7 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose = require("mongoose");
+const Ship = require("./Ship");
 var playerSchema = new mongoose.Schema({
+    userId: {
+        type: mongoose.SchemaTypes.String,
+        required: false
+    },
     shots: {
         type: [mongoose.SchemaTypes.Number],
         required: false
@@ -15,39 +20,43 @@ var playerSchema = new mongoose.Schema({
         required: false
     },
 });
-var Ship = require('./Ship.js');
+// var Ship = require('./Ship.js');
 var Settings = require('./settings.js');
-/**
- * Player constructor
- * @param {type} id Socket ID
- */
-function Player(id) {
-    var i;
-    this.id = id;
-    this.shots = Array(Settings.gridRows * Settings.gridCols);
-    this.shipGrid = Array(Settings.gridRows * Settings.gridCols);
+// /**
+//  * Player constructor
+//  * @param {type} id Socket ID
+//  */
+// function Player(id) {
+//     var i;
+//     console.log('*******************************************costruttore Player');
+//     this.id = id;
+//     this.shots = Array(Settings.gridRows * Settings.gridCols);
+//     this.shipGrid = Array(Settings.gridRows * Settings.gridCols);
+//     this.ships = [];
+//
+//     for(i = 0; i < Settings.gridRows * Settings.gridCols; i++) {
+//         this.shots[i] = 0;
+//         this.shipGrid[i] = -1;
+//     }
+//
+//     // if(!this.createRandomShips()) {
+//     //     // Random placement of ships failed. Use fallback layout (should rarely happen).
+//     //     this.ships = [];
+//     //     this.createShips();
+//     // }
+// };
+playerSchema.methods.start = function (userId) {
+    console.log('playerSchema.methods.start - start');
+    this.userId = userId;
+    this.shots = []; /*Array(Settings.gridRows * Settings.gridCols);*/
+    this.shipGrid = []; /*Array(Settings.gridRows * Settings.gridCols);*/
     this.ships = [];
+    var i;
     for (i = 0; i < Settings.gridRows * Settings.gridCols; i++) {
         this.shots[i] = 0;
         this.shipGrid[i] = -1;
     }
-    if (!this.createRandomShips()) {
-        // Random placement of ships failed. Use fallback layout (should rarely happen).
-        this.ships = [];
-        this.createShips();
-    }
-}
-;
-playerSchema.methods.start = function () {
-    var i;
-    // this.id = id;
-    this.shots = Array(Settings.gridRows * Settings.gridCols);
-    this.shipGrid = Array(Settings.gridRows * Settings.gridCols);
-    this.ships = [];
-    for (i = 0; i < Settings.gridRows * Settings.gridCols; i++) {
-        this.shots[i] = 0;
-        this.shipGrid[i] = -1;
-    }
+    console.log('playerSchema.methods.start - end');
 };
 /**
  * Fire shot on grid
@@ -167,7 +176,7 @@ playerSchema.methods.checkShipAdjacent = function (ship) {
 playerSchema.methods.createShips = function () {
     var shipIndex, i, gridIndex, ship, x = [1, 3, 5, 8, 8], y = [1, 2, 5, 2, 8], horizontal = [false, true, false, false, true];
     for (shipIndex = 0; shipIndex < Settings.ships.length; shipIndex++) {
-        ship = new Ship(Settings.ships[shipIndex]);
+        ship = Ship.newShip(Settings.ships[shipIndex]);
         ship.horizontal = horizontal[shipIndex];
         ship.x = x[shipIndex];
         ship.y = y[shipIndex];
@@ -180,7 +189,6 @@ playerSchema.methods.createShips = function () {
         this.ships.push(ship);
     }
 };
-module.exports = Player; //************************************************************** TODO credo si possa rimuovere
 function getSchema() { return playerSchema; }
 exports.getSchema = getSchema;
 // Mongoose Model
@@ -192,12 +200,16 @@ function getModel() {
     return playerModel;
 }
 exports.getModel = getModel;
-function newPlayer(data) {
+function newPlayer(user1Id) {
+    console.log('export function newPlayer - start');
+    console.log('user1Id=' + user1Id);
     var _playermodel = getModel();
-    var player = new _playermodel(data);
-    // TODO costructor to test - if it does not work, try method start
-    debugger;
-    player.start();
+    var player = new _playermodel();
+    player.start(user1Id);
+    // console.log('save starting...');
+    // player.save().then();
+    // console.log('save end');
+    console.log('export function newPlayer - end');
     return player;
 }
 exports.newPlayer = newPlayer;
