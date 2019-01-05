@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { PartiteService } from '../partite.service';
 import { Game} from '../Game';
 import { UserService } from '../user.service';
@@ -11,7 +11,7 @@ import { SocketioService } from '../socketio.service';
   styleUrls: ['./game-list.component.css']
 })
 export class GameListComponent implements OnInit {
-
+  
   private games: Game[] = [];
   
   constructor( private sio: SocketioService , private gm:PartiteService, private us: UserService, private router: Router ) { }
@@ -41,16 +41,29 @@ export class GameListComponent implements OnInit {
   }
 
   public Join_user( idgame: number,idus:number ) {
-    
- console.log('sto passando IDgame: ' + idgame + ' e IDuser' + idus );
+    var txt  = ' { "gameId" :"' +idgame+'",'+'"userId" :"'+idus+'"}';
+    var dati = JSON.parse(txt);
+
+    this.gm.join_game(dati).subscribe( () => {
+      console.log('Message posted');
+          }, (error) => {
+    console.log('Error occurred while posting: ' + error);
+    });
+ //console.log('sto passando : ' + txt );
  
   }
   
-  public Create_game( idus:number ) {
-    
-    console.log('sto generando una nuova partita con IDuser' + idus );
-    
-     }
+  public Create_game( idus:string ) {
+  var text  = ' { "user1Id" :"' +idus+ '"' + '}' ;
+  var id = JSON.parse(text);
+   console.log('sto generando una nuova partita con IDuser' + id);
+   this.gm.post_game(id).subscribe( () => {
+      }, (error) => {
+    console.log('Error occurred while posting: ' + error);
+   
+   });
+  }
+     
   
 
   logout() {

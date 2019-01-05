@@ -1,3 +1,4 @@
+import { BattagliaComponent } from './battaglia/battaglia.component';
 import { GameListComponent } from './game-list/game-list.component';
 import { MessageEditorComponent } from './message-editor/message-editor.component';
 import { UserListComponent } from './user-list/user-list.component';
@@ -18,6 +19,7 @@ const routes: Routes = [
   { path: 'menu', component: MenuComponent },
   { path: 'userlist', component: UserListComponent },
   { path: 'gamelist', component: GameListComponent },
+  { path: 'battaglia', component: BattagliaComponent },
   { path: 'sendmessages', component: MessageEditorComponent },
   { path: 'messages', component: MessageListComponent }
 ];

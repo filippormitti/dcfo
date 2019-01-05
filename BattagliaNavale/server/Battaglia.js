@@ -234,7 +234,14 @@ app.get('/games', auth, (req, res, next) => {
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
     });
 });
-app.get('/games/join', /*auth,*/ (req, res, next) => {
+app.get('/games/:gameStatus', auth, (req, res, next) => {
+    game.getModel().find({ gameStatus: req.params.gameStatus }).then((games) => {
+        return res.status(200).json(games);
+    }).catch((reason) => {
+        return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
+    });
+});
+app.post('/games/join', /*auth,*/ (req, res, next) => {
     console.log('get /games/join - reqBody=' + JSON.stringify(req.body));
     console.log('passa1');
     game.getModel().findOne({ _id: req.body.gameId }).then((matchedGame) => {

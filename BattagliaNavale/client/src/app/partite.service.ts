@@ -1,3 +1,4 @@
+import { Game } from './Game';
 
 import { Injectable } from '@angular/core';
 import jwtdecode = require('jwt-decode');
@@ -18,7 +19,15 @@ export class PartiteService {
   get_gamelist( ): Observable<any> {
     return of( this.partite );
   }
+  join_game( dati:object): Observable<boolean> {
+    return of( );
+  }
 
-
-
+  post_game( id: object): Observable<any> {
+    
+       return of();
+  }
+  get_id() {
+    return ;
+  }
 }

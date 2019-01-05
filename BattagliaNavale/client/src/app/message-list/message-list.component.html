@@ -3,7 +3,7 @@
    <li><a routerLink="/menu">Torna al menu</a></li>
   </ul>  
  </nav>
-
+ 
 <app-message-editor (posted)="get_receivermessages(this.us.get_mail())" ></app-message-editor>
 <h2>Messaggi ricevuti</h2>
 <div *ngFor="let message of messages"  > 

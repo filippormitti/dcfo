@@ -23,6 +23,7 @@ import { SocketioService } from './socketio.service';
 import { MenuComponent } from './menu/menu.component';
 import { UserListComponent } from './user-list/user-list.component';
 import { GameListComponent } from './game-list/game-list.component';
+import { BattagliaComponent } from './battaglia/battaglia.component';
 
 
 @NgModule({
@@ -34,7 +35,8 @@ import { GameListComponent } from './game-list/game-list.component';
     UserSignupComponent,
     MenuComponent,
     UserListComponent,
-    GameListComponent
+    GameListComponent,
+    BattagliaComponent
   ],
   imports: [
     BrowserModule,

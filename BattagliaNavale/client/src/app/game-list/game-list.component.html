@@ -4,18 +4,19 @@
   </ul>  
  </nav>
  <div class="game-body" >
-  <div class="btn-crea" (click)="Create_game(us.get_id())" >
-      <button class="btn-crea">Crea nuova partita</button>  
+   <div class="btn-crea"  >
+      <button class="btn-crea" routerLink="/menu" (click)="Create_game(us.get_id())" >Crea nuova partita</button>  
     </div>  
 
 <h2>Elenco partite</h2>
 <div *ngFor="let game of games"  > 
     <div class="game-body" >
-        <div class="btn-partecipa" (click)="Join_user(game._id,us.get_id())" >
-            <button class="btn-partecipa">Partecipa</button>  
+        <div class="btn-partecipa" routerLink="/menu" (click)="Join_user(game._id,us.get_id())" >utente{{us.get_id()}}
+            <button class="btn-partecipa" *ngIf= "(!(game.players[0].includes(us.get_id()))&&(game.gameStatus!==1)) ">Partecipa</button>  
           </div>  
+          <app-battaglia [theGame]="game"></app-battaglia>
         <h5 class="game-title">ID {{game._id}}</h5>
-        <h5 class="game-title">Stato: {{game.gameStatus}}</h5>        
+        <h5 class="game-title" *ngIf= "game.gameStatus == 0 ">Stato: waiting</h5>        
             </div>
 </div>
 

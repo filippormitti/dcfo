@@ -50,12 +50,24 @@ export class PartiteHttpService {
   }
 
   get_gamelist(): Observable<Game[]> {
-    return this.http.get<Game[]>( this.us.url + '/games', this.create_options({limit: '10', skip: '0'}   )).pipe(
+    return this.http.get<Game[]>( this.us.url + '/games/', this.create_options({limit: '10', skip: '0'}   )).pipe(
         tap( (data) => console.log(JSON.stringify(data))) ,
         catchError( this.handleError )
       );
   }
-
+  join_game(dati:object): Observable<boolean> {
+    console.log('Posting ' + dati );
+    return this.http.post<object>( this.us.url + '/games/join', dati,this.create_options({limit: '10', skip: '0'}   )).pipe(
+        tap( (data) => console.log(JSON.stringify(data))) ,
+        catchError( this.handleError )
+      );
+  }
+  
+  post_game( id: object): Observable<any> {
+       return this.http.post<object>( this.us.url + '/games', id,  this.create_options() ).pipe(
+      catchError(this.handleError)
+    );
+  }
  
 
  }

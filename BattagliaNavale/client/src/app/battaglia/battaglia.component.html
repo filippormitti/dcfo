@@ -1,0 +1,31 @@
+
+<body *ngIf='theGame.gameStatus==1'>
+  
+ <div>
+  <label>Opponent</label>
+</div>
+<div id="board">
+  <table>
+      <tr *ngFor="let row of OpponentBoard.matrix">
+          <td (click)="fire(col)" *ngFor="let col of row" [ngClass]="{'miss': (col.attacked && !col.hasboat), 'hit': (col.attacked && col.hasboat) }"></td>
+      </tr>
+  </table>
+</div>
+<div>
+  <label>Me</label>
+</div>
+<button (click)="setShip(Cacciatorpediniere);"> Cacciatorpediniere </button>
+<button (click)="setShip(Sottomarino);" >Sottomarino</button>
+<button (click)="setShip(Corazzata);">Corazzata</button>
+<button (click)="setShip(Portaerei);">Portaeri</button>
+  
+<div id="board">
+    
+  <table>
+       <tr *ngFor="let row of MyBoard.matrix">
+          <td (click)="posNave(col.y,col.x)" *ngFor="let col of row" [ngClass]="{'hit': isHit(col.y,col.x)} "></td>
+      </tr>
+
+  </table>
+</div>
+</body>
