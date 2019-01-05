@@ -15,9 +15,7 @@ export class PartiteHttpService {
   private partite = [];
 
   constructor( private http: HttpClient, private us: UserService ) {
-    console.log('game service instantiated');
-    console.log('User service token: ' + us.get_token() );
-   }
+      }
 
 
   private handleError(error: HttpErrorResponse) {
@@ -51,14 +49,12 @@ export class PartiteHttpService {
 
   get_gamelist(): Observable<Game[]> {
     return this.http.get<Game[]>( this.us.url + '/games/', this.create_options({limit: '10', skip: '0'}   )).pipe(
-        tap( (data) => console.log(JSON.stringify(data))) ,
-        catchError( this.handleError )
+                catchError( this.handleError )
       );
   }
   join_game(dati:object): Observable<boolean> {
-    console.log('Posting ' + dati );
-    return this.http.post<object>( this.us.url + '/games/join', dati,this.create_options({limit: '10', skip: '0'}   )).pipe(
-        tap( (data) => console.log(JSON.stringify(data))) ,
+        return this.http.post<object>( this.us.url + '/games/join', dati,this.create_options({limit: '10', skip: '0'}   )).pipe(
+       
         catchError( this.handleError )
       );
   }

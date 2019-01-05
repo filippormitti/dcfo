@@ -78,8 +78,7 @@ export class UserHttpService {
 
     return this.http.post( this.url + '/users', user, options ).pipe(
       tap( (data) => {
-        console.log(JSON.stringify(data) );
-        this.token = data.token;
+           this.token = data.token;
       })
     );
 
@@ -94,9 +93,8 @@ export class UserHttpService {
       })
     };
     return this.http.get( this.url + '/users' ,  options,).pipe(
-      tap( (data) =>{ console.log(JSON.stringify(data));
-      
-      })
+         
+    
       );
   }
  
@@ -110,10 +108,7 @@ export class UserHttpService {
       })
     };
     return this.http.delete( this.url + '/users/'+ id ,  options,).pipe(
-      tap( (data) =>{ console.log(JSON.stringify(data));
-      
-      })
-      );
+          );
   }
 
   get_token() {

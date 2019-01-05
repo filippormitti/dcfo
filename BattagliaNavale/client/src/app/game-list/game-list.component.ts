@@ -18,7 +18,9 @@ export class GameListComponent implements OnInit {
 
   ngOnInit() {
     this.get_listgames();
-   
+    this.sio.connect().subscribe( (m) => {
+      this.get_listgames();
+    });
    
   }
 
@@ -43,22 +45,20 @@ export class GameListComponent implements OnInit {
   public Join_user( idgame: number,idus:number ) {
     var txt  = ' { "gameId" :"' +idgame+'",'+'"userId" :"'+idus+'"}';
     var dati = JSON.parse(txt);
-
-    this.gm.join_game(dati).subscribe( () => {
-      console.log('Message posted');
+        this.gm.join_game(dati).subscribe( () => {
+                   console.log('jong eseguita');
           }, (error) => {
     console.log('Error occurred while posting: ' + error);
     });
- //console.log('sto passando : ' + txt );
+
  
   }
   
   public Create_game( idus:string ) {
   var text  = ' { "user1Id" :"' +idus+ '"' + '}' ;
   var id = JSON.parse(text);
-   console.log('sto generando una nuova partita con IDuser' + id);
-   this.gm.post_game(id).subscribe( () => {
-      }, (error) => {
+      this.gm.post_game(id).subscribe( () => {
+       }, (error) => {
     console.log('Error occurred while posting: ' + error);
    
    });

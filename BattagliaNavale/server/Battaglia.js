@@ -220,6 +220,7 @@ app.get('/renew', auth, (req, res, next) => {
 app.post('/games', (req, res, next) => {
     var g = game.newGame(req.body.user1Id);
     g.save().then((data) => {
+        ios.emit('broadcast', data);
         return res.status(200).json({ error: false, errormessage: "", id: data._id });
     }).catch((reason) => {
         if (reason.code === 11000)
@@ -245,6 +246,7 @@ app.post('/games/join', /*auth,*/ (req, res, next) => {
     console.log('get /games/join - reqBody=' + JSON.stringify(req.body));
     console.log('passa1');
     game.getModel().findOne({ _id: req.body.gameId }).then((matchedGame) => {
+        ios.emit('broadcast', matchedGame);
         console.log('passa2');
         console.log('matchedGame=' + matchedGame);
         matchedGame.join(req.body.userId);

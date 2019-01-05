@@ -49,14 +49,12 @@ export class MessageHttpService {
 
   get_messages(): Observable<Message[]> {
     return this.http.get<Message[]>( this.us.url + '/messages', this.create_options( {limit: '10', skip: '0'} ) ).pipe(
-        tap( (data) => console.log(JSON.stringify(data))) ,
         catchError( this.handleError )
       );
   }
 
   get_receivermessages(mail:string): Observable<Message[]> {
        return this.http.get<Message[]>( this.us.url + '/messages/' + mail, this.create_options( {limit: '10', skip: '0'} ) ).pipe(
-        tap( (data) => console.log(JSON.stringify(data))) ,
         catchError( this.handleError )
       );
   }
