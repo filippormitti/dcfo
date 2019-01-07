@@ -24,6 +24,7 @@ import { MenuComponent } from './menu/menu.component';
 import { UserListComponent } from './user-list/user-list.component';
 import { GameListComponent } from './game-list/game-list.component';
 import { BattagliaComponent } from './battaglia/battaglia.component';
+import { ChatComponent } from './chat/chat.component';
 
 
 @NgModule({
@@ -36,7 +37,8 @@ import { BattagliaComponent } from './battaglia/battaglia.component';
     MenuComponent,
     UserListComponent,
     GameListComponent,
-    BattagliaComponent
+    BattagliaComponent,
+    ChatComponent
   ],
   imports: [
     BrowserModule,

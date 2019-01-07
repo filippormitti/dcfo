@@ -14,9 +14,9 @@
         <div class="btn-partecipa" (click)="Join_user(game._id,us.get_id())" >
             <button class="btn-partecipa" *ngIf= "(!(game.players[0].includes(us.get_id()))&&(game.gameStatus!==1)) ">Partecipa</button>  
           </div>  
-          <app-battaglia [theGame]="game"></app-battaglia>
         <h5 class="game-title">ID {{game._id}}</h5>
-        <h5 class="game-title" *ngIf= "game.gameStatus == 0 ">Stato: waiting</h5>        
+        <h5 class="game-title" *ngIf= "game.gameStatus == 0 ">Stato: waiting</h5>   
+        <app-battaglia [theGame]="game"></app-battaglia>     
             </div>
 </div>
 
