@@ -304,31 +304,96 @@ app.get('/games', auth, (req,res,next) => {
     })
 });
 
-app.get('/games/:gameStatus', auth, (req, res, next) => {
-  game.getModel().find({ gameStatus: req.params.gameStatus }).then((games) => {
-      return res.status(200).json(games);
-  }).catch((reason) => {
-      return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
-  });
-});
+// app.get('/games/:gameStatus', auth, (req, res, next) => {
+//   game.getModel().find({ gameStatus: req.params.gameStatus }).then((games) => {
+//       return res.status(200).json(games);
+//   }).catch((reason) => {
+//       return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
+//   });
+// });
+
 app.post('/games/join', /*auth,*/ (req,res,next) => {
     console.log('get /games/join - reqBody='+JSON.stringify(req.body));
 
     console.log('passa1');
     game.getModel().findOne({_id: req.body.gameId}).then( (matchedGame)=> {
       ios.emit('broadcast', matchedGame );
-        console.log('passa2');
 
-        console.log('matchedGame='+matchedGame);
-        matchedGame.join(req.body.userId);
+        var playerId = matchedGame.join(req.body.userId);
+        // console.log('playerId='+playerId);
 
+        // player.getModel().findOne({_id: playerId}).then( (matchedPlayer)=> {
+        //     ios.emit('broadcast', matchedPlayer );
+        //     console.log('matchedPlayer='+JSON.stringify(matchedPlayer));
+        //     console.log('matchedPlayer.userId='+matchedPlayer.userId);
+        //     matchedPlayer.userId = '999999999';
+        //     console.log('matchedPlayer.userId='+matchedPlayer.userId);
+        //     matchedPlayer.save();
+        //
+        //     return res.status(200).json(true);
+        // }).catch( (reason) => {
+        //     return next({ statusCode:404, error: true, errormessage: "DB error: "+reason });
+        // });
         return res.status(200).json(true);
     }).catch( (reason) => {
-        console.log('passa3');
         return next({ statusCode:404, error: true, errormessage: "DB error: "+reason });
     });
-    console.log('passa4');
 });
+
+//***************************** ships *******************************
+app.post('/ships', /*auth,*/ (req,res,next) => {
+    console.log('post /ships - reqBody='+JSON.stringify(req.body));
+
+    game.getModel().findOne({_id: req.body.gameId }).then( (matchedGame)=> {
+        ios.emit('broadcast', matchedGame );
+
+        console.log('matchedGame.currentPlayer='+matchedGame.currentPlayer);
+        var playerId = matchedGame.players[matchedGame.currentPlayer];
+
+        player.getModel().findOne({_id: playerId}).then( (matchedPlayer)=> {
+            ios.emit('broadcast', matchedPlayer );
+
+            // console.log('matchedPlayer='+JSON.stringify(matchedPlayer));
+            // console.log('matchedPlayer.userId='+matchedPlayer.userId);
+            // matchedPlayer.userId = '999999999';
+            // console.log('matchedPlayer.userId='+matchedPlayer.userId);
+            // matchedPlayer.save();
+
+            // matchedPlayer.placeShip();
+
+
+            return res.status(200).json(true);
+        }).catch( (reason) => {
+            return next({ statusCode:404, error: true, errormessage: "DB error: "+reason });
+        });
+
+
+        return /*res.status(200).json(true);*/ "ciao";
+    }).then((test)=> {
+        console.log('test='+test);
+        return res.status(200).json(true);
+    }).catch( (reason) => {
+        return next({ statusCode:404, error: true, errormessage: "DB error: "+reason });
+    });
+});
+
+
+
+// //per posizionare nave ti mando coordinate e dimensione nave così riesci a capire che nave è
+// post posnave (gameId, x,y,size, horizontal?) return boolean
+//
+// //per inviare il colpo
+// post shoot(x,y) return boolean
+//
+// //verifica stato campo avversario
+// post statoopponent(x,y) return 2 colpita,1miss,0 non init (questo nel progetto è This.shots[gridindex])
+// //verifica stato mio campo
+// post statomyboard(x,y) return -1 vuoto number pieno  (questo nel progetto è This.shipGrid[gridindex])
+// // per sapere quali navi ho affondato
+// get SunkShips() return Array[Ship]
+
+
+
 
 //***************************** auth *******************************
 // Configure HTTP basic authentication strategy 

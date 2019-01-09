@@ -16,7 +16,7 @@ var gameSchema = new mongoose.Schema({
         required: false
     },
     players: {
-        type: [mongoose.SchemaTypes.String],
+        type: [mongoose.SchemaTypes.ObjectId],
         required: false
     },
 });
@@ -42,19 +42,32 @@ gameSchema.methods.start = function (userId) {
     this.winningPlayer = null;
     this.gameStatus = GameStatus.waitingPlayer;
     var player = Player.newPlayer(userId);
-    this.players = [JSON.stringify(player)];
+    this.players.push(player);
     console.log('gameSchema.methods.start - end');
 };
 gameSchema.methods.join = function (userId) {
     console.log('gameSchema.methods.join - start');
+    console.log('this.players.length=' + this.players.length);
+    console.log('this.players=' + this.players);
     if (this.players.length < 2) {
-        console.log('this.players.length < 2');
         var player = Player.newPlayer(userId);
-        this.players.push(JSON.stringify(player));
-        this.gameStatus = GameStatus.inProgress;
+        this.players.push(player);
+        console.log('this.players=' + this.players);
+        console.log('this.players._id=' + this.players._id);
+        console.log('this.players[0]=' + this.players[0]);
+        console.log('this.players[1]=' + this.players[1]);
+        console.log('this.players[1]["userId"]=' + this.players[1]["userId"]);
+        Player.getModel().findOne({ _id: this.players[0] }).then((matchedPlayer) => {
+            console.log('999matchedPlayer=' + JSON.stringify(matchedPlayer));
+            console.log('999matchedPlayer.userId=' + matchedPlayer.userId);
+            matchedPlayer.userId = '13999999999';
+            console.log('999matchedPlayer.userId=' + matchedPlayer.userId);
+            matchedPlayer.save();
+        });
         this.save();
     }
     console.log('gameSchema.methods.join - end');
+    return this.players[0];
 };
 /**
  * Get socket ID of player

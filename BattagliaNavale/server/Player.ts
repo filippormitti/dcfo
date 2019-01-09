@@ -241,6 +241,7 @@ export function getSchema() { return playerSchema; }
 
 // Mongoose Model
 var playerModel;  // This is not exposed outside the model
+
 export function getModel() : mongoose.Model< Player >  { // Return Model as singleton
     if( !playerModel ) {
         playerModel = mongoose.model('Player', getSchema() )
@@ -256,9 +257,9 @@ export function newPlayer( user1Id ): Player {
     var player = new _playermodel();
     player.start(user1Id);
 
-    // console.log('save starting...');
-    // player.save().then();
-    // console.log('save end');
+    console.log('save starting...');
+    player.save().then();
+    console.log('save end');
 
     console.log('export function newPlayer - end');
     return player;

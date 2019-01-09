@@ -206,9 +206,9 @@ function newPlayer(user1Id) {
     var _playermodel = getModel();
     var player = new _playermodel();
     player.start(user1Id);
-    // console.log('save starting...');
-    // player.save().then();
-    // console.log('save end');
+    console.log('save starting...');
+    player.save();
+    console.log('save end');
     console.log('export function newPlayer - end');
     return player;
 }

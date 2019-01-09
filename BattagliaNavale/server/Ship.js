@@ -35,11 +35,13 @@ var shipSchema = new mongoose.Schema({
 //     this.horizontal = false;
 // }
 shipSchema.methods.start = function (size) {
+    console.log('gameSchema.methods.start - start');
     this.x = 0;
     this.y = 0;
     this.size = size;
     this.hits = 0;
     this.horizontal = false;
+    console.log('gameSchema.methods.start - end');
 };
 /**
  * Check if ship is sunk
@@ -53,18 +55,20 @@ exports.getSchema = getSchema;
 // Mongoose Model
 var shipModel; // This is not exposed outside the model
 function getModel() {
+    console.log('export function getModel() - start');
     if (!shipModel) {
         shipModel = mongoose.model('Ship', getSchema());
     }
+    console.log('export function getModel() - end');
     return shipModel;
 }
 exports.getModel = getModel;
 function newShip(data) {
+    console.log('export function newShip() - start');
     var _shipmodel = getModel();
     var ship = new _shipmodel(data);
-    // TODO costructor to test - if it does not work, try method start
-    debugger;
     ship.start(data.size);
+    console.log('export function newShip() - end');
     return ship;
 }
 exports.newShip = newShip;
