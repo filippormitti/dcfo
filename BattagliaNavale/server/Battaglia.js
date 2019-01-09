@@ -79,7 +79,11 @@ const mongoose = require("mongoose");
 const message = require("./Message");
 const user = require("./User");
 const game = require("./Game");
-const player = require("./Player");
+// import { Player } from './Player';
+// import * as player from './Player';
+//
+// import { Ship } from './Ship';
+// import * as ship from './Ship';
 const express = require("express");
 const bodyparser = require("body-parser"); // body-parser middleware is used to parse the request body and
 // directly provide a Javascript object if the "Content-type" is
@@ -248,68 +252,55 @@ app.post('/games/join', /*auth,*/ (req, res, next) => {
     console.log('passa1');
     game.getModel().findOne({ _id: req.body.gameId }).then((matchedGame) => {
         ios.emit('broadcast', matchedGame);
-        console.log('passa2');
         var playerId = matchedGame.join(req.body.userId);
-        console.log('playerId=' + playerId);
-        player.getModel().findOne({ _id: playerId }).then((matchedPlayer) => {
-            ios.emit('broadcast', matchedPlayer);
-            console.log('matchedPlayer=' + JSON.stringify(matchedPlayer));
-            console.log('matchedPlayer.userId=' + matchedPlayer.userId);
-            matchedPlayer.userId = '999999999';
-            console.log('matchedPlayer.userId=' + matchedPlayer.userId);
-            matchedPlayer.save();
-            return res.status(200).json(true);
-        }).catch((reason) => {
-            return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
-        });
+        // console.log('playerId='+playerId);
+        // player.getModel().findOne({_id: playerId}).then( (matchedPlayer)=> {
+        //     ios.emit('broadcast', matchedPlayer );
+        //     console.log('matchedPlayer='+JSON.stringify(matchedPlayer));
+        //     console.log('matchedPlayer.userId='+matchedPlayer.userId);
+        //     matchedPlayer.userId = '999999999';
+        //     console.log('matchedPlayer.userId='+matchedPlayer.userId);
+        //     matchedPlayer.save();
+        //
+        //     return res.status(200).json(true);
+        // }).catch( (reason) => {
+        //     return next({ statusCode:404, error: true, errormessage: "DB error: "+reason });
+        // });
         return res.status(200).json(true);
     }).catch((reason) => {
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
     });
 });
-// app.post('/games/join', /*auth,*/ (req,res,next) => {
-//     console.log('get /games/join - reqBody='+JSON.stringify(req.body));
-//
-//     console.log('passa1');
-//     game.getModel().findOne({_id: req.body.gameId}).then( (matchedGame)=> {
-//         ios.emit('broadcast', matchedGame );
-//         console.log('passa2');
-//
-//         matchedGame.join(req.body.userId);
-//         console.log('dopo matchedGame.join()');
-//
-//         return matchedGame;
-//
-//     }).then((matchedGame)=>{
-//         ios.emit('broadcast', matchedGame );
-//         matchedGame.save().then((data)=>{
-//             ios.emit('broadcast', data );
-//
-//         });
-//     }).catch( (reason) => {
-//         console.log('passa3');
-//         return next({ statusCode:404, error: true, errormessage: "DB error: "+reason });
-//     });
-//     console.log('passa4');
-// });
 //***************************** ships *******************************
 app.post('/ships', /*auth,*/ (req, res, next) => {
     console.log('post /ships - reqBody=' + JSON.stringify(req.body));
     game.getModel().findOne({ _id: req.body.gameId }).then((matchedGame) => {
         ios.emit('broadcast', matchedGame);
         console.log('matchedGame.currentPlayer=' + matchedGame.currentPlayer);
-        // var _player = JSON.parse(matchedGame.players[matchedGame.currentPlayer]);
-        // matchedGame.players.
-        return /*res.status(200).json(true);*/ "ciao";
-    }).then((test) => {
-        console.log('test=' + test);
-        return res.status(200).json(true);
+        var result = matchedGame.placeShip(req.body.x, req.body.y, req.body.horizontal, req.body.shipIndex);
+        // player.getModel().findOne({_id: playerId}).then( (matchedPlayer)=> {
+        //     ios.emit('broadcast', matchedPlayer );
+        //
+        //     // console.log('matchedPlayer='+JSON.stringify(matchedPlayer));
+        //     // console.log('matchedPlayer.userId='+matchedPlayer.userId);
+        //     // matchedPlayer.userId = '999999999';
+        //     // console.log('matchedPlayer.userId='+matchedPlayer.userId);
+        //     // matchedPlayer.save();
+        //
+        //     // matchedPlayer.placeShip();
+        //
+        //
+        //     return res.status(200).json(true);
+        // }).catch( (reason) => {
+        //     return next({ statusCode:404, error: true, errormessage: "DB error: "+reason });
+        // });
+        return res.status(200).json("ciao a tutti!");
     }).catch((reason) => {
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
     });
 });
 // //per posizionare nave ti mando coordinate e dimensione nave così riesci a capire che nave è
-// post posnave (gameId, userId, x,y,size) return boolean
+// post posnave (gameId, x,y,size, horizontal?) return boolean
 //
 // //per inviare il colpo
 // post shoot(x,y) return boolean

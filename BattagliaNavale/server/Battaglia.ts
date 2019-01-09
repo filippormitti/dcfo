@@ -90,11 +90,11 @@ import * as user from './User';
 import { Game } from './Game';
 import * as game from './Game';
 
-import { Player } from './Player';
-import * as player from './Player';
-
-import { Ship } from './Ship';
-import * as ship from './Ship';
+// import { Player } from './Player';
+// import * as player from './Player';
+//
+// import { Ship } from './Ship';
+// import * as ship from './Ship';
 
 import express = require('express');
 import bodyparser = require('body-parser');      // body-parser middleware is used to parse the request body and
@@ -348,30 +348,27 @@ app.post('/ships', /*auth,*/ (req,res,next) => {
         ios.emit('broadcast', matchedGame );
 
         console.log('matchedGame.currentPlayer='+matchedGame.currentPlayer);
-        var playerId = matchedGame.players[matchedGame.currentPlayer];
+        var result = matchedGame.placeShip(req.body.x, req.body.y, req.body.horizontal, req.body.shipIndex);
 
-        player.getModel().findOne({_id: playerId}).then( (matchedPlayer)=> {
-            ios.emit('broadcast', matchedPlayer );
+        // player.getModel().findOne({_id: playerId}).then( (matchedPlayer)=> {
+        //     ios.emit('broadcast', matchedPlayer );
+        //
+        //     // console.log('matchedPlayer='+JSON.stringify(matchedPlayer));
+        //     // console.log('matchedPlayer.userId='+matchedPlayer.userId);
+        //     // matchedPlayer.userId = '999999999';
+        //     // console.log('matchedPlayer.userId='+matchedPlayer.userId);
+        //     // matchedPlayer.save();
+        //
+        //     // matchedPlayer.placeShip();
+        //
+        //
+        //     return res.status(200).json(true);
+        // }).catch( (reason) => {
+        //     return next({ statusCode:404, error: true, errormessage: "DB error: "+reason });
+        // });
 
-            // console.log('matchedPlayer='+JSON.stringify(matchedPlayer));
-            // console.log('matchedPlayer.userId='+matchedPlayer.userId);
-            // matchedPlayer.userId = '999999999';
-            // console.log('matchedPlayer.userId='+matchedPlayer.userId);
-            // matchedPlayer.save();
 
-            // matchedPlayer.placeShip();
-
-
-            return res.status(200).json(true);
-        }).catch( (reason) => {
-            return next({ statusCode:404, error: true, errormessage: "DB error: "+reason });
-        });
-
-
-        return /*res.status(200).json(true);*/ "ciao";
-    }).then((test)=> {
-        console.log('test='+test);
-        return res.status(200).json(true);
+        return res.status(200).json("ciao a tutti!");
     }).catch( (reason) => {
         return next({ statusCode:404, error: true, errormessage: "DB error: "+reason });
     });

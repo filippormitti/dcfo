@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose = require("mongoose");
-const Player = require("./Player");
 var gameSchema = new mongoose.Schema({
     currentPlayer: {
         type: mongoose.SchemaTypes.Number,
@@ -16,11 +15,11 @@ var gameSchema = new mongoose.Schema({
         required: false
     },
     players: {
-        type: [mongoose.SchemaTypes.ObjectId],
+        type: [mongoose.SchemaTypes.String],
         required: false
     },
 });
-// var Player = require('./Player.js');
+var Player = require('./Player.js');
 var Settings = require('./settings.js');
 var GameStatus = require('./gameStatus.js');
 // /**
@@ -41,8 +40,9 @@ gameSchema.methods.start = function (userId) {
     this.currentPlayer = Math.floor(Math.random() * 2);
     this.winningPlayer = null;
     this.gameStatus = GameStatus.waitingPlayer;
-    var player = Player.newPlayer(userId);
-    this.players.push(player);
+    var player = new Player(userId);
+    console.log('player.userId= ' + player.userId);
+    this.players.push(JSON.stringify(player));
     console.log('gameSchema.methods.start - end');
 };
 gameSchema.methods.join = function (userId) {
@@ -50,24 +50,36 @@ gameSchema.methods.join = function (userId) {
     console.log('this.players.length=' + this.players.length);
     console.log('this.players=' + this.players);
     if (this.players.length < 2) {
-        var player = Player.newPlayer(userId);
-        this.players.push(player);
-        console.log('this.players=' + this.players);
-        console.log('this.players._id=' + this.players._id);
-        console.log('this.players[0]=' + this.players[0]);
-        console.log('this.players[1]=' + this.players[1]);
-        console.log('this.players[1]["userId"]=' + this.players[1]["userId"]);
-        Player.getModel().findOne({ _id: this.players[0] }).then((matchedPlayer) => {
-            console.log('999matchedPlayer=' + JSON.stringify(matchedPlayer));
-            console.log('999matchedPlayer.userId=' + matchedPlayer.userId);
-            matchedPlayer.userId = '13999999999';
-            console.log('999matchedPlayer.userId=' + matchedPlayer.userId);
-            matchedPlayer.save();
-        });
+        var player = new Player(userId);
+        this.players.push(JSON.stringify(player));
         this.save();
     }
     console.log('gameSchema.methods.join - end');
     return this.players[0];
+};
+gameSchema.methods.placeShip = function (x, y, horizontal, shipIndex) {
+    console.log('gameSchema.methods.placeShip - start');
+    var player = this.getPlayerFromString(this.players[this.currentPlayer]);
+    var res = player.placeShip(x, y, horizontal, shipIndex);
+    console.log('player.ships= ' + JSON.stringify(player.ships));
+    var players = this.players;
+    this.players = [];
+    this.save();
+    this.players = players;
+    this.players[this.currentPlayer] = JSON.stringify(player);
+    this.save();
+    console.log('gameSchema.methods.placeShip - end');
+    return res;
+};
+gameSchema.methods.getPlayerFromString = function (string) {
+    var playerString = JSON.parse(string);
+    // console.log('playerString= '+JSON.stringify(playerString));
+    var player = new Player(playerString.userId);
+    player.shipGrid = playerString.shipGrid;
+    player.ships = playerString.ships;
+    player.shots = playerString.shots;
+    // console.log('player.userId= '+player.userId);
+    return player;
 };
 /**
  * Get socket ID of player
