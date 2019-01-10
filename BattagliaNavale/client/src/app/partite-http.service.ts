@@ -48,7 +48,12 @@ export class PartiteHttpService {
   }
 
   get_gamelist(): Observable<Game[]> {
-    return this.http.get<Game[]>( this.us.url + '/games/', this.create_options({limit: '10', skip: '0'}   )).pipe(
+    return this.http.get<Game[]>( this.us.url + '/games/'+0, this.create_options({limit: '10', skip: '0'}   )).pipe(
+                catchError( this.handleError )
+      );
+  }
+  get_gameid(id:string): Observable<Game[]> {
+    return this.http.get<Game[]>( this.us.url + '/games/partita/'+id, this.create_options({limit: '10', skip: '0'}   )).pipe(
                 catchError( this.handleError )
       );
   }
@@ -59,8 +64,8 @@ export class PartiteHttpService {
       );
   }
   
-  post_game( id: object): Observable<any> {
-       return this.http.post<object>( this.us.url + '/games', id,  this.create_options() ).pipe(
+  post_game( id: object): Observable<Game> {
+       return this.http.post<Game>( this.us.url + '/games', id,  this.create_options() ).pipe(
       catchError(this.handleError)
     );
   }

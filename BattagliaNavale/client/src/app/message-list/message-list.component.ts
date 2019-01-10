@@ -22,7 +22,6 @@ export class MessageListComponent implements OnInit {
     this.get_receivermessages(this.us.get_mail());
   });
   }
-
   public get_receivermessages(mail:string) {
        this.ms.get_receivermessages(mail).subscribe(
       ( messages ) => {

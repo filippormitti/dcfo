@@ -5,7 +5,7 @@ import { Component, OnInit,Input } from '@angular/core';
 import { PartiteService } from '../partite.service';
 import { Game} from '../Game';
 import { UserService } from '../user.service';
-import { Router, ActivatedRouteSnapshot } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { SocketioService } from '../socketio.service';
 
 
@@ -15,8 +15,10 @@ import { SocketioService } from '../socketio.service';
   styleUrls: ['./battaglia.component.css']
 })
 export class BattagliaComponent implements OnInit {
-  @Input('theGame') theGame: Game;
-  posizione;
+  loaded=false;
+  private partita: Game;
+gameid: string;
+posizione;
   MyBoard: Board = new Board();
   OpponentBoard: Board = new Board();
  // Cacciatorpediniere: Ship= new Ship();
@@ -28,7 +30,7 @@ export class BattagliaComponent implements OnInit {
 
 
 
-  constructor( private sio: SocketioService , private gm:PartiteService, private us: UserService, private router: Router ) { }
+  constructor(private route: ActivatedRoute, private sio: SocketioService , private gm:PartiteService, private us: UserService, private router: Router ) { }
   //this.Sottomarino.size=3;
  // this.Cacciatorpediniere.size=1;
  // this.Corazzata.size=4;
@@ -40,7 +42,33 @@ export class BattagliaComponent implements OnInit {
 
  
   ngOnInit() {
+    this.route.params.subscribe((params) => this.gameid = params.gameid
+    );
+    this.get_game()
+    this.sio.connect().subscribe( (m) => {
+    this.get_game();
+    });
   }
+  public get_game() {
+    this.gm.get_gameid(this.gameid).subscribe(
+   ( games ) => {
+     this.partita = games;
+     
+    this.loaded=true;
+   } , (err) => {
+
+     // Try to renew the token
+     this.us.renew().subscribe( () => {
+       // Succeeded
+       this.get_game();
+     }, (err2) => {
+       // Error again, we really need to logout
+       this.logout();
+     } );
+   }
+ );
+}
+
 
  // setShip(selected:Ship){
  //   this.MyShip=selected;
@@ -70,7 +98,11 @@ export class BattagliaComponent implements OnInit {
   //  return false;
   }
       
-  
+  logout() {
+    this.us.logout();
+    this.router.navigate(['/']);
+  }
+
 
  
 }

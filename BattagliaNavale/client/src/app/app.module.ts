@@ -27,6 +27,7 @@ import { BattagliaComponent } from './battaglia/battaglia.component';
 import { ChatComponent } from './chat/chat.component';
 
 
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -38,7 +39,8 @@ import { ChatComponent } from './chat/chat.component';
     UserListComponent,
     GameListComponent,
     BattagliaComponent,
-    ChatComponent
+    ChatComponent,
+    
   ],
   imports: [
     BrowserModule,

@@ -1,6 +1,9 @@
 
-<body *ngIf='theGame.gameStatus==1'>
-  
+<body *ngIf="loaded">
+      <a > Partita :{{gameid}}</a>
+      <div *ngIf='partita.gameStatus== 0'> Attesa secondo giocatore</div>
+  <div *ngIf='partita.gameStatus== 1'>
+
   <div>
     <label>Opponent</label>
   </div>
@@ -27,6 +30,6 @@
       </tr>
   </table>
   </div>
-
-<app-chat [theGame]="theGame"></app-chat>
+  <app-chat [theGame]="partita"></app-chat> 
+</div>
 </body>

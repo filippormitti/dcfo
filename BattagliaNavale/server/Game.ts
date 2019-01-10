@@ -87,6 +87,7 @@ gameSchema.methods.join = function (userId) {
     if (this.players.length < 2){
         var player = new Player(userId);
         this.players.push(JSON.stringify(player));
+        this.gameStatus = GameStatus.inProgress;
         this.save();
     }
 

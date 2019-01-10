@@ -226,7 +226,7 @@ app.post('/games', (req, res, next) => {
     var g = game.newGame(req.body.user1Id);
     g.save().then((data) => {
         ios.emit('broadcast', data);
-        return res.status(200).json({ error: false, errormessage: "", id: data._id });
+        return res.status(200).json(data);
     }).catch((reason) => {
         if (reason.code === 11000)
             return next({ statusCode: 404, error: true, errormessage: "game already exists" });
@@ -240,13 +240,20 @@ app.get('/games', auth, (req, res, next) => {
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
     });
 });
-// app.get('/games/:gameStatus', auth, (req, res, next) => {
-//   game.getModel().find({ gameStatus: req.params.gameStatus }).then((games) => {
-//       return res.status(200).json(games);
-//   }).catch((reason) => {
-//       return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
-//   });
-// });
+app.get('/games/:gameStatus', auth, (req, res, next) => {
+    game.getModel().find({ gameStatus: req.params.gameStatus }).then((games) => {
+        return res.status(200).json(games);
+    }).catch((reason) => {
+        return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
+    });
+});
+app.get('/games/partita/:id', auth, (req, res, next) => {
+    game.getModel().findOne({ _id: req.params.id }).then((games) => {
+        return res.status(200).json(games);
+    }).catch((reason) => {
+        return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
+    });
+});
 app.post('/games/join', /*auth,*/ (req, res, next) => {
     console.log('get /games/join - reqBody=' + JSON.stringify(req.body));
     console.log('passa1');

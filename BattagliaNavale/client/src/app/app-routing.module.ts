@@ -19,7 +19,7 @@ const routes: Routes = [
   { path: 'menu', component: MenuComponent },
   { path: 'userlist', component: UserListComponent },
   { path: 'gamelist', component: GameListComponent },
-  { path: 'battaglia', component: BattagliaComponent },
+  { path: 'battaglia/:gameid', component: BattagliaComponent },
   { path: 'sendmessages', component: MessageEditorComponent },
   { path: 'messages', component: MessageListComponent }
 ];

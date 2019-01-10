@@ -20,16 +20,23 @@ private chat: Message;
   constructor( private sio: SocketioService , private ms: MessageService, private us: UserService, private router: Router ) { }
 
   ngOnInit() {
-   this.get_receivermessages(this.theGame._id);
-   this.set_empty();
+  this.get_receivermessages(this.theGame._id);
+  this.sio.connect().subscribe( (m) => {
+    this.get_receivermessages(this.theGame._id);
+  });
+  this.set_empty();
   }
   set_empty() {
-  this.chat = { tags: [], content: '', timestamp: new Date(), authormail: '',receiver:this.theGame._id };
-  }
+
+this.chat = { tags: [], content: '', timestamp: new Date(), authormail: '',receiver:this.theGame._id };
+
+}
   public get_receivermessages(mail:string) {
+    
        this.ms.get_receivermessages(mail).subscribe(
       ( messages ) => {
         this.messages = messages;
+        
       } , (err) => {
 
         // Try to renew the token
@@ -45,6 +52,7 @@ private chat: Message;
   }
   post_message( ) {
     this.chat.timestamp = new Date();
+    this.chat.authormail= this.us.get_mail();
     this.ms.post_message( this.chat ).subscribe( (m) => {
       console.log('chatposted');
       this.set_empty();

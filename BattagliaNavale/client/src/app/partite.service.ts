@@ -19,11 +19,15 @@ export class PartiteService {
   get_gamelist( ): Observable<any> {
     return of( this.partite );
   }
+  get_gameid(id:string ): Observable<any> {
+    return of( this.partite );
+  }
+ 
   join_game( dati:object): Observable<boolean> {
     return of( );
   }
 
-  post_game( id: object): Observable<any> {
+  post_game( id: object): Observable<Game> {
     
        return of();
   }

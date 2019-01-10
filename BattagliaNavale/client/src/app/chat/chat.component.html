@@ -7,12 +7,11 @@
       <div class="form-group">
 
         <!--<label for="messagetext">Message</label>-->
-        <textarea class="form-control" [(ngModel)]="chat.content" #messagetx id="messagetext" 
+        <textarea class="form-control"  [(ngModel)]="chat.content"  #messagetx id="messagetext" 
         rows="3" (keyup.enter)="post_message()" placeholder="Enter your message here"></textarea>
       </div>
     <button type="submit" class="btn btn-primary" (click)="post_message()" >Post <i class="fas fa-paper-plane"></i></button>
   </div>
-
 
 </div>
 <div *ngFor="let message of messages"  > 
