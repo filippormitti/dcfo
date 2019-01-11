@@ -1,4 +1,4 @@
-export interface Ship {
+export class Ship {
     x:number;
     y:number;
     size:number;

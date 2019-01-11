@@ -69,6 +69,11 @@ export class PartiteHttpService {
       catchError(this.handleError)
     );
   }
+  post_ship( dati: object): Observable<boolean> {
+    return this.http.post<boolean>( this.us.url + '/ships', dati, this.create_options() ).pipe(
+   catchError(this.handleError)
+ );
+}
  
 
  }

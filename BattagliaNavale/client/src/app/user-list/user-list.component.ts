@@ -1,4 +1,3 @@
-import { OrderByPipe } from './../Pipe';
 import { Component, OnInit, Pipe } from '@angular/core';
 import { User } from '../User';
 import { UserService } from '../user.service';

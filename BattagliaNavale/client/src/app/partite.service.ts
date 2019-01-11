@@ -31,6 +31,9 @@ export class PartiteService {
     
        return of();
   }
+  post_ship( dati:object): Observable<boolean> {
+    return of( );
+  }
   get_id() {
     return ;
   }

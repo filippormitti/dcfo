@@ -17,16 +17,23 @@
   <div>
     <label>Me</label>
   </div>
-  <button (click)="setShip(Cacciatorpediniere);"> Cacciatorpediniere </button>
-  <button (click)="setShip(Sottomarino);" >Sottomarino</button>
-  <button (click)="setShip(Corazzata);">Corazzata</button>
-  <button (click)="setShip(Portaerei);">Portaeri</button>
-  
+  <div>
+  <button *ngIf='cacciaindex>=0'(click)="setShip(Cacciatorpediniere,true);"> Cacciatorpediniere oriz</button> 
+  <button *ngIf='sottomarinoindex>3'(click)="setShip(Sottomarino,true);" >Sottomarino oriz</button>
+  <button *ngIf='carrozzataindex>5'(click)="setShip(Corazzata,true);">Corazzata oriz</button>
+  <button *ngIf='portaindex==8'(click)="setShip(Portaerei,true);">Portaeri oriz</button>
+  </div>
+  <div>
+    <button *ngIf='cacciaindex>=0'(click)="setShip(Cacciatorpediniere,false);"> Cacciatorpediniere verticale</button> 
+    <button *ngIf='sottomarinoindex>3'(click)="setShip(Sottomarino,false);" >Sottomarino verticale</button>
+    <button *ngIf='carrozzataindex>5'(click)="setShip(Corazzata,false);">Corazzata verticale</button>
+    <button *ngIf='portaindex==8'(click)="setShip(Portaerei,false);">Portaeri verticale</button>
+    </div>
   <div id="board">
   
   <table>
        <tr *ngFor="let row of MyBoard.matrix">
-          <td (click)="posNave(col.y,col.x)" *ngFor="let col of row" [ngClass]="{'hit': isHit(col.y,col.x)} "></td>
+          <td (click)="post_ship(col.y,col.x,gameid,myindex,MyShip.horizontal)" *ngFor="let col of row" [ngClass]="{'hit': isHit(col.y,col.x)} "></td>
       </tr>
   </table>
   </div>
