@@ -26,6 +26,18 @@ function Player(userId) {
     // }
 };
 
+// Player.prototype.getShipFromString = function (string) {
+//     var oPlayer = JSON.parse(string);
+//     // console.log('oPlayer= '+JSON.stringify(oPlayer));
+//     var player = new Player(oPlayer.userId);
+//     player.shipGrid = oPlayer.shipGrid;
+//     player.ships = oPlayer.ships;
+//     player.shots = oPlayer.shots;
+//     // console.log('player.userId= '+player.userId);
+//
+//     return player;
+// };
+
 /**
  * Fire shot on grid
  * @param {type} gridIndex
@@ -52,7 +64,8 @@ Player.prototype.getSunkShips = function() {
     var i, sunkShips = [];
 
     for(i = 0; i < this.ships.length; i++) {
-        if(this.ships[i].isSunk()) {
+        // console.log('Player.prototype.getSunkShips - this.ships[i]='+JSON.stringify(this.ships[i]));
+        if(this.ships[i].hits >= this.ships[i].size) {
             sunkShips.push(this.ships[i]);
         }
     }
@@ -68,7 +81,7 @@ Player.prototype.getShipsLeft = function() {
     var i, shipCount = 0;
 
     for(i = 0; i < this.ships.length; i++) {
-        if(!this.ships[i].isSunk()) {
+        if(!this.ships[i].hits >= this.ships[i].size) {
             shipCount++;
         }
     }
@@ -117,15 +130,18 @@ Player.prototype.placeShip = function(x, y, horizontal, shipIndex) {
 
     // place ship in shipGrid
     var i;
-    var gridIndex = ship.y * Settings.gridCols + ship.x;
-    for(i = 0; i < ship.size; i++) {
-        this.shipGrid[gridIndex] = shipIndex;
-        gridIndex += ship.horizontal ? 1 : Settings.gridCols;
+    if(!this.checkShipOverlap(ship) && !this.checkShipAdjacent(ship)) {
+        // success - ship does not overlap or is adjacent to other ships
+        // place ship array-index in shipGrid
+        gridIndex = ship.y * Settings.gridCols + ship.x;
+        for(i = 0; i < ship.size; i++) {
+            this.shipGrid[gridIndex] = shipIndex;
+            gridIndex += ship.horizontal ? 1 : Settings.gridCols;
+        }
+        return true;
     }
 
-    console.log('Player.prototype.placeShip - end');
-
-    return true;
+    return false;
 }
 
 /**

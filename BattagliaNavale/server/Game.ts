@@ -14,15 +14,18 @@ export interface Game extends mongoose.Document {
     start: (userId:string)=>void,
     join: (userId:string)=>void,
     placeShip: (x:number, y:number, size:number, horizontal:boolean)=>boolean,
+    getPlayerFromIndex: (playerIndex:number)=>Player,
     getPlayerFromString: (string:string)=>Player,
-    getPlayerId: (player:number)=>string,
+    forceSave: (player:Player, playerIndex:number)=>void,
+    isMyTurn: (userId:string)=>boolean,
+    getPlayerId: (playerIndex:number)=>string,
     getWinnerId: ()=>string,
     getLoserId: ()=>string,
     switchPlayer: ()=>void,
-    abortGame: (player:number)=>void,
-    shoot: (position:number[])=>string,
-    getGameState: (player:number, gridOwner:string[])=>string[],
-    getGrid: (player:number, hideShips:boolean)=>string[],
+    abortGame: (playerIndex:number)=>void,
+    shoot: (position:object)=>boolean,
+    getGameState: (playerIndex:number, gridOwner:number)=>string,
+    getGrid: (userId:number, hideShips:boolean)=>string,
 }
 
 var gameSchema = new mongoose.Schema( {
@@ -99,32 +102,43 @@ gameSchema.methods.join = function (userId) {
 gameSchema.methods.placeShip = function (x, y, horizontal, shipIndex) {
     console.log('gameSchema.methods.placeShip - start');
 
-    var player = this.getPlayerFromString(this.players[this.currentPlayer]);
+    // convert Player from string to object
+    var player = this.getPlayerFromIndex(this.currentPlayer);
+
     var res = player.placeShip(x, y, horizontal, shipIndex);
     console.log('player.ships= '+JSON.stringify(player.ships));
 
-    var players = this.players;
-    this.players = [];
-    this.save();
-    this.players = players;
-    this.players[this.currentPlayer] = JSON.stringify(player);
-    this.save();
+    this.forceSave(player, this.currentPlayer);
 
     console.log('gameSchema.methods.placeShip - end');
 
     return res;
 };
 
+gameSchema.methods.getPlayerFromIndex = function (playerIndex) {
+    return this.getPlayerFromString(this.players[playerIndex]);
+};
+
 gameSchema.methods.getPlayerFromString = function (string) {
-    var playerString = JSON.parse(string);
-    // console.log('playerString= '+JSON.stringify(playerString));
-    var player = new Player(playerString.userId);
-    player.shipGrid = playerString.shipGrid;
-    player.ships = playerString.ships;
-    player.shots = playerString.shots;
+    var oPlayer = JSON.parse(string);
+    // console.log('oPlayer= '+JSON.stringify(oPlayer));
+    var player = new Player(oPlayer.userId);
+    player.shipGrid = oPlayer.shipGrid;
+    player.ships = oPlayer.ships;
+    player.shots = oPlayer.shots;
     // console.log('player.userId= '+player.userId);
 
     return player;
+};
+
+gameSchema.methods.forceSave = function (player, playerIndex) {
+    // to save game.players it's needed to clear it and save it again... probably some mongoose bug
+    var players = this.players;
+    this.players = [];
+    this.save();
+    this.players = players;
+    this.players[playerIndex] = JSON.stringify(player);
+    this.save();
 };
 
 /**
@@ -132,8 +146,9 @@ gameSchema.methods.getPlayerFromString = function (string) {
  * @param {type} player
  * @returns {undefined}
  */
-gameSchema.methods.getPlayerId = function(player) {
-  return this.players[player].id;
+gameSchema.methods.getPlayerId = function(playerIndex) {
+    var player = this.getPlayerFromIndex(playerIndex)
+    return player._id;
 };
 
 /**
@@ -141,10 +156,25 @@ gameSchema.methods.getPlayerId = function(player) {
  * @returns {BattleshipGame.prototype@arr;players@pro;id}
  */
 gameSchema.methods.getWinnerId = function() {
-  if(this.winningPlayer === null) {
-    return null;
-  }
-  return this.players[this.winningPlayer].id;
+    if(this.winningPlayer === null) {
+        return null;
+    }
+    var player = this.getPlayerFromIndex(this.winningPlayer);
+
+    return player.userId;
+};
+
+gameSchema.methods.isMyTurn = function(userId) {
+    console.log('gameSchema.methods.placeShip - userId='+userId);
+    var currentPlayer = this.getPlayerFromIndex(this.currentPlayer);
+    console.log("gameSchema.methods.placeShip - currentPlayer.userId="+currentPlayer.userId);
+
+    if (currentPlayer.userId == userId){
+        return true;
+    }
+    else{
+        return false;
+    }
 };
 
 /**
@@ -152,11 +182,13 @@ gameSchema.methods.getWinnerId = function() {
  * @returns {BattleshipGame.prototype@arr;players@pro;id}
  */
 gameSchema.methods.getLoserId = function() {
-  if(this.winningPlayer === null) {
-    return null;
-  }
-  var loser = this.winningPlayer === 0 ? 1 : 0;
-  return this.players[loser].id;
+    if (this.winningPlayer === null) {
+        return null;
+    }
+    var loserIndex = this.winningPlayer === 0 ? 1 : 0;
+    var player = this.getPlayerFromIndex(loserIndex);
+
+    return player.userId;
 };
 
 /**
@@ -170,10 +202,11 @@ gameSchema.methods.switchPlayer = function() {
  * Abort game
  * @param {Number} player Player who made the request
  */
-gameSchema.methods.abortGame = function(player) {
+gameSchema.methods.abortGame = function(playerIndex) {
   // give win to opponent
   this.gameStatus = GameStatus.gameOver;
-  this.winningPlayer = player === 0 ? 1 : 0;
+  this.winningPlayer = playerIndex === 0 ? 1 : 0;
+  this.save();
 }
 
 /**
@@ -182,26 +215,31 @@ gameSchema.methods.abortGame = function(player) {
  * @returns {boolean} True if shot was valid
  */
 gameSchema.methods.shoot = function(position) {
-  var opponent = this.currentPlayer === 0 ? 1 : 0,
-      gridIndex = position.y * Settings.gridCols + position.x;
+    var opponentPlayerIndex = this.currentPlayer === 0 ? 1 : 0;
+    var gridIndex = position.y * Settings.gridCols + position.x;
 
-  if(this.players[opponent].shots[gridIndex] === 0 && this.gameStatus === GameStatus.inProgress) {
-    // Square has not been shot at yet.
-    if(!this.players[opponent].shoot(gridIndex)) {
-      // Miss
-      this.switchPlayer();
+    // convert Player from string to object
+    var opponentPlayer = this.getPlayerFromIndex(opponentPlayerIndex);
+
+    if(opponentPlayer.shots[gridIndex] === 0 && this.gameStatus === GameStatus.inProgress) {
+        // Square has not been shot at yet.
+        if(!opponentPlayer.shoot(gridIndex)) {
+            // Miss
+            this.switchPlayer();
+        }
+
+        // Check if game over
+        if(opponentPlayer.getShipsLeft() <= 0) {
+            this.gameStatus = GameStatus.gameOver;
+            this.winningPlayer = opponentPlayerIndex === 0 ? 1 : 0;
+        }
+
+        this.forceSave(opponentPlayer, opponentPlayerIndex);
+
+        return true;
     }
 
-    // Check if game over
-    if(this.players[opponent].getShipsLeft() <= 0) {
-      this.gameStatus = GameStatus.gameOver;
-      this.winningPlayer = opponent === 0 ? 1 : 0;
-    }
-    
-    return true;
-  }
-
-  return false;
+    return false;
 };
 
 /**
@@ -210,11 +248,11 @@ gameSchema.methods.shoot = function(position) {
  * @param {Number} gridOwner Player whose grid state to update
  * @returns {BattleshipGame.prototype.getGameState.battleshipGameAnonym$0}
  */
-gameSchema.methods.getGameState = function(player, gridOwner) {
+gameSchema.methods.getGameState = function(playerIndex, gridOwner) {
   return {
-    turn: this.currentPlayer === player,                 // is it this player's turn?
-    gridIndex: player === gridOwner ? 0 : 1,             // which client grid to update (0 = own, 1 = opponent)
-    grid: this.getGrid(gridOwner, player !== gridOwner)  // hide unsunk ships if this is not own grid
+    turn: this.currentPlayer === playerIndex,                 // is it this player's turn?
+    gridIndex: playerIndex === gridOwner ? 0 : 1,             // which client grid to update (0 = own, 1 = opponent)
+    grid: this.getGrid(gridOwner, playerIndex !== gridOwner)  // hide unsunk ships if this is not own grid
   };
 };
 
@@ -224,11 +262,29 @@ gameSchema.methods.getGameState = function(player, gridOwner) {
  * @param {type} hideShips Hide unsunk ships
  * @returns {BattleshipGame.prototype.getGridState.battleshipGameAnonym$0}
  */
-gameSchema.methods.getGrid = function(player, hideShips) {
-  return {
-    shots: this.players[player].shots,
-    ships: hideShips ? this.players[player].getSunkShips() : this.players[player].ships
-  };
+gameSchema.methods.getGrid = function(userId, hideShips) {
+    var matchedPlayer = null;
+
+    var self = this;
+    this.players.forEach(function (playerString, index) {
+        // console.log('gameSchema.methods.getGrid - playerString='+playerString+', index='+index);
+        var player = self.getPlayerFromIndex(index);
+        // console.log('gameSchema.methods.getGrid - player='+player.userId);
+        if (player.userId === userId){
+            matchedPlayer = player;
+            // console.log('gameSchema.methods.getGrid - matchedPlayer='+matchedPlayer.userId);
+        }
+    });
+    // console.log('gameSchema.methods.getGrid - matchedPlayer='+matchedPlayer.userId);
+    var response = null;
+    if(matchedPlayer != null){
+        response = {
+            shots: matchedPlayer.shots,
+            ships: hideShips ? matchedPlayer.getSunkShips() : matchedPlayer.ships
+        }
+    }
+
+    return response;
 };
 
  //*************************************************************** TODO credo si possa rimuovere
