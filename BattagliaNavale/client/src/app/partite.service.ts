@@ -22,6 +22,9 @@ export class PartiteService {
   get_gameid(id:string ): Observable<any> {
     return of( this.partite );
   }
+  get_turn( game:string,id:string ): Observable<boolean> {
+    return of( );
+  }
  
   join_game( dati:object): Observable<boolean> {
     return of( );

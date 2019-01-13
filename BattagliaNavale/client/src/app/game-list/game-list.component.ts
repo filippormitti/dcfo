@@ -45,7 +45,7 @@ export class GameListComponent implements OnInit {
   }
 
   public Join_user( idgame: string,idus:number ) {
-    var txt  = ' { "gameId" :"' +idgame+'",'+'"userId" :"'+idus+'"}';
+    var txt  = ' { "id" :"' +idgame+'",'+'"userId" :"'+idus+'"}';
     var dati = JSON.parse(txt);
         this.gm.join_game(dati).subscribe( () => {
                    console.log('jong eseguita');

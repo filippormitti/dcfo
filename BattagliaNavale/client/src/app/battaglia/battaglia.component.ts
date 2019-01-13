@@ -31,6 +31,7 @@ sottomarinoindex=5;
 carrozzataindex=7;
 portaindex=8;
 myindex: number;
+turno:boolean;
 
 
 
@@ -58,7 +59,9 @@ myindex: number;
     this.sio.connect().subscribe( (m) => {
     this.get_game();
     });
+    this.get_turn();
   }
+
   public get_game() {
     this.gm.get_gameid(this.gameid).subscribe(
    ( games ) => {
@@ -83,6 +86,23 @@ public ruota(ship:Ship){
   ship.horizontal=false;
   ship.horizontal=true;
 }
+public get_turn(){  
+  this.gm.get_turn(this.gameid,this.us.get_id()).subscribe(
+    ( turno ) => {
+      this.turno = turno;
+         } , (err) => {
+ 
+      // Try to renew the token
+      this.us.renew().subscribe( () => {
+        // Succeeded
+        this.get_turn();
+      }, (err2) => {
+        // Error again, we really need to logout
+        this.logout();
+      } );
+    }
+  );
+ }
 
  public setShip(selected:Ship,horizontal:boolean){
   Object.assign(this.MyShip, selected);
@@ -138,6 +158,7 @@ public ruota(ship:Ship){
       console.log('Error occurred while posting: ' + error);
       });
   
+           
    
     }
     
