@@ -9,6 +9,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { SocketioService } from '../socketio.service';
 
 
+
 @Component({
   selector: 'app-battaglia',
   templateUrl: './battaglia.component.html',
@@ -16,7 +17,7 @@ import { SocketioService } from '../socketio.service';
 })
 export class BattagliaComponent implements OnInit {
   loaded=false;
-  private partita: Game;
+  partita: Game;
 gameid: string;
 posizione;
 MyBoard: Board = new Board();
@@ -32,6 +33,8 @@ carrozzataindex=7;
 portaindex=8;
 myindex: number;
 turno:boolean;
+setnave=true;
+
 
 
 
@@ -58,17 +61,21 @@ turno:boolean;
     this.get_game()
     this.sio.connect().subscribe( (m) => {
     this.get_game();
-    });
     this.get_turn();
-  }
+    });
+    
+   
+    }
 
   public get_game() {
     this.gm.get_gameid(this.gameid).subscribe(
    ( games ) => {
      this.partita = games;
-     
-    this.loaded=true;
+      console.log('assegno partita');
+      this.get_turn();
+     this.loaded=true;
    } , (err) => {
+
 
      // Try to renew the token
      this.us.renew().subscribe( () => {
@@ -87,9 +94,16 @@ public ruota(ship:Ship){
   ship.horizontal=true;
 }
 public get_turn(){  
+  if (this.partita.gameStatus==0){
+    console.log('entro in stato 0');
+    return;
+  }
+ 
+
   this.gm.get_turn(this.gameid,this.us.get_id()).subscribe(
     ( turno ) => {
       this.turno = turno;
+      console.log('turno vale'+turno);
          } , (err) => {
  
       // Try to renew the token
@@ -97,14 +111,16 @@ public get_turn(){
         // Succeeded
         this.get_turn();
       }, (err2) => {
+        console.log('generato errore turno');
         // Error again, we really need to logout
-        this.logout();
+        //this.logout();
       } );
     }
   );
  }
 
  public setShip(selected:Ship,horizontal:boolean){
+  this.setnave=true;
   Object.assign(this.MyShip, selected);
   this.MyShip.horizontal=horizontal;
 
@@ -133,6 +149,7 @@ public get_turn(){
   
   public post_ship(col: number, row:number, gameid:string,gridIndex:number,horizontal:boolean){
     if (this.MyShip.size==0){
+      this.setnave=false;
       console.log('seleziona nave')
       return; 
     }
@@ -141,20 +158,20 @@ public get_turn(){
     +'"x":'+col+',"y":'+row+',"horizontal":'+horizontal+'}';
     console.log('il valore di txt' +txt);
       var dati = JSON.parse(txt);
-        if((0<=gridIndex)&&(gridIndex<=3))
-        this.cacciaindex=this.cacciaindex -1;
-        if((4<=gridIndex)&&(gridIndex<=5))
-        this.sottomarinoindex=this.sottomarinoindex-1;
-        if((6<=gridIndex)&&(gridIndex<=7))
-        this.carrozzataindex=this.carrozzataindex-1;
-        if(gridIndex==8)
-        this.portaindex=this.portaindex-1;
-
-        
-          this.gm.post_ship(dati).subscribe( () => {
-            this.MyShip.size=0;
+            this.gm.post_ship(dati).subscribe( () => {
+              if((0<=gridIndex)&&(gridIndex<=3))
+              this.cacciaindex=this.cacciaindex -1;
+              if((4<=gridIndex)&&(gridIndex<=5))
+              this.sottomarinoindex=this.sottomarinoindex-1;
+              if((6<=gridIndex)&&(gridIndex<=7))
+              this.carrozzataindex=this.carrozzataindex-1;
+              if(gridIndex==8)
+              this.portaindex=this.portaindex-1;
+              this.MyShip.size=0;
+              this.setnave=true;
                      console.log('nave postata' +txt);
             }, (error) => {
+              this.setnave=false;
       console.log('Error occurred while posting: ' + error);
       });
   

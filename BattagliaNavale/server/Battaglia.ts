@@ -352,7 +352,7 @@ app.get('/games/:id/turn/:userId', /*auth,*/ (req, res, next) => {
     console.log('get /games/:id/turn/:userId - reqParams='+JSON.stringify(req.params));
 
     game.getModel().findOne({ _id: req.params.id }).then((matchedGame) => {
-        ios.emit('broadcast', matchedGame );
+    //    ios.emit('broadcast', matchedGame );
         var turn = matchedGame.isMyTurn(req.params.userId);
         return res.status(200).json(turn);
     }).catch((reason) => {
