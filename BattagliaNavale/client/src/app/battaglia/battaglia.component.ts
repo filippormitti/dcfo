@@ -61,7 +61,7 @@ setnave=true;
     this.get_game()
     this.sio.connect().subscribe( (m) => {
     this.get_game();
-    this.get_turn();
+    
     });
     
    
@@ -158,7 +158,9 @@ public get_turn(){
     +'"x":'+col+',"y":'+row+',"horizontal":'+horizontal+'}';
     console.log('il valore di txt' +txt);
       var dati = JSON.parse(txt);
-            this.gm.post_ship(dati).subscribe( () => {
+            this.gm.post_ship(dati).subscribe( (esito) => {
+              if(esito){
+                console.log('il valore di esito è ' +esito);
               if((0<=gridIndex)&&(gridIndex<=3))
               this.cacciaindex=this.cacciaindex -1;
               if((4<=gridIndex)&&(gridIndex<=5))
@@ -170,6 +172,11 @@ public get_turn(){
               this.MyShip.size=0;
               this.setnave=true;
                      console.log('nave postata' +txt);
+              }
+              else  {
+                this.setnave=false;
+                console.log('il valore di esito è ' +esito);}
+
             }, (error) => {
               this.setnave=false;
       console.log('Error occurred while posting: ' + error);
@@ -178,6 +185,21 @@ public get_turn(){
            
    
     }
+
+    public fire(x: number,y: number, gameid:string){
+     
+      var txt  = ' { "id" :"' +gameid+'",'
+      +'"x" :'+x+',"y":'+y+'}';
+      console.log('il valore di txt' +txt);
+        var dati = JSON.parse(txt);
+              this.gm.post_shot(dati).subscribe( () => {
+               
+              }, (error) => {
+           });
+    
+             
+     
+      }
     
   //  this.MyShip.x=row;
   //  this.MyShip.y=col;

@@ -367,7 +367,7 @@ app.post('/games/shot', /*auth,*/ (req,res,next) => {
         ios.emit('broadcast', matchedGame );
 
         // var position = JSON.parse(req.body.position);
-        var updatedGame = matchedGame.shoot(req.body.position);
+        var updatedGame = matchedGame.shoot(req.body.x,req.body.y);
 
         return res.status(200).json(updatedGame);
     }).catch( (reason) => {

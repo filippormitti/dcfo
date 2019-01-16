@@ -2,16 +2,17 @@
 <body *ngIf="loaded">
       <a > Partita :{{gameid}}</a>
       <div *ngIf='partita.gameStatus== 0'> Attesa secondo giocatore</div>
-  <div *ngIf='partita.gameStatus== 1'>
-    <h1  *ngIf='!(turno)'> Non è il tuo turno attendi avversario..</h1>
+      <div *ngIf='partita.gameStatus== 2'> Partita finita</div>
+      <div *ngIf='partita.gameStatus== 1'>
+       <h1  *ngIf='!(turno)'> Non è il tuo turno attendi avversario..</h1>
     <div *ngIf='turno'>
-      <div>
+          <div>
           <label>Opponent</label>
         </div>
         <div id="board">
         <table>
             <tr *ngFor="let row of OpponentBoard.matrix">
-                <td (click)="fire(col)" *ngFor="let col of row" [ngClass]="{'miss': (col.attacked && !col.hasboat), 'hit': (col.attacked && col.hasboat) }"></td>
+                <td (click)="fire(col.x, col.y,gameid)" *ngFor="let col of row" [ngClass]="{'miss': (col.attacked && !col.hasboat), 'hit': (col.attacked && col.hasboat) }"></td>
             </tr>
           </table>
         </div>
@@ -42,7 +43,7 @@
       </div>
       </div>
       <div>
-        <h1 *ngIf='!(setnave)'> attenzione posizionamento non possibile selezoionare nave o verificare posizione</h1>
+        <h1 *ngIf='!(setnave)'> attenzione posizionamento non possibile selezionare nave o verificare posizione</h1>
       </div>
       <app-chat [theGame]="partita"></app-chat> 
 </div>

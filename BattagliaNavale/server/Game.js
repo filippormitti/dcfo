@@ -154,9 +154,9 @@ gameSchema.methods.abortGame = function (playerIndex) {
  * @param {Object} position with x and y
  * @returns {boolean} True if shot was valid
  */
-gameSchema.methods.shoot = function (position) {
+gameSchema.methods.shoot = function (x, y) {
     var opponentPlayerIndex = this.currentPlayer === 0 ? 1 : 0;
-    var gridIndex = position.y * Settings.gridCols + position.x;
+    var gridIndex = y * Settings.gridCols + x;
     // convert Player from string to object
     var opponentPlayer = this.getPlayerFromIndex(opponentPlayerIndex);
     if (opponentPlayer.shots[gridIndex] === 0 && this.gameStatus === GameStatus.inProgress) {
