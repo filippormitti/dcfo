@@ -23,7 +23,7 @@ export interface Game extends mongoose.Document {
     getLoserId: ()=>string,
     switchPlayer: ()=>void,
     abortGame: (playerIndex:number)=>void,
-    shoot: (position:object)=>boolean,
+    shoot: (x:number,y:number)=>boolean,
     getGameState: (playerIndex:number, gridOwner:number)=>string,
     getGrid: (userId:number)=>string,
 }
@@ -214,9 +214,9 @@ gameSchema.methods.abortGame = function(playerIndex) {
  * @param {Object} position with x and y
  * @returns {boolean} True if shot was valid
  */
-gameSchema.methods.shoot = function(position) {
+gameSchema.methods.shoot = function(x,y) {
     var opponentPlayerIndex = this.currentPlayer === 0 ? 1 : 0;
-    var gridIndex = position.y * Settings.gridCols + position.x;
+    var gridIndex = y * Settings.gridCols + x;
 
     // convert Player from string to object
     var opponentPlayer = this.getPlayerFromIndex(opponentPlayerIndex);

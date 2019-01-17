@@ -79,6 +79,11 @@ export class PartiteHttpService {
    catchError(this.handleError)
  );
 }
+post_shot( dati: object): Observable<boolean> {
+  return this.http.post<boolean>( this.us.url + '/games/shot', dati, this.create_options() ).pipe(
+ catchError(this.handleError)
+);
+}
  
 
  }
