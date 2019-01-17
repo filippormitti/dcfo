@@ -376,20 +376,35 @@ app.post('/games/shot', /*auth,*/ (req,res,next) => {
 });
 
 //***************************** games/battlefields *******************************
-// url example: 'http://localhost:8080/games/5c36861ba1357722467f5a59/battlefields/0123/false'
-app.get('/games/:id/battlefields/:userId/:hideShips', /*auth,*/ (req, res, next) => {
-    console.log('get /games/:id/battlefields/:userId/:hideShips - reqParams='+JSON.stringify(req.params));
+// url example: 'http://localhost:8080/games/5c36861ba1357722467f5a59/battlefields/0123'
+app.get('/games/:id/battlefields/:userId', /*auth,*/ (req, res, next) => {
+    console.log('get /games/:id/battlefields/:userId - reqParams='+JSON.stringify(req.params));
 
     game.getModel().findOne({ _id: req.params.id }).then((matchedGame) => {
         ios.emit('broadcast', matchedGame );
-        var hideShips = (req.params.hideShips === 'true') ? true : false;
-        var playerStatus = matchedGame.getGrid(req.params.userId, hideShips);
+        // var hideShips = (req.params.hideShips === 'true') ? true : false;
+        var grids = matchedGame.getGrid(req.params.userId);
 
-        return res.status(200).json(playerStatus);
+        return res.status(200).json(grids);
     }).catch((reason) => {
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
     });
 });
+
+// url example: 'http://localhost:8080/games/5c36861ba1357722467f5a59/battlefields/0123/position/'
+// app.get('/games/:id/battlefields/:userId/position/:position', /*auth,*/ (req, res, next) => {
+//     console.log('get /games/:id/battlefields/:userId/position/:position - reqParams='+JSON.stringify(req.params));
+//
+//     game.getModel().findOne({ _id: req.params.id }).then((matchedGame) => {
+//         ios.emit('broadcast', matchedGame );
+//         // var hideShips = (req.params.hideShips === 'true') ? true : false;
+//         var outcome = matchedGame.getGrid(req.params.userId, req.params.position);
+//
+//         return res.status(200).json(outcome);
+//     }).catch((reason) => {
+//         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
+//     });
+// });
 
 //***************************** ships *******************************
 app.post('/ships', /*auth,*/ (req,res,next) => {

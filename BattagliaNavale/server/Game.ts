@@ -25,7 +25,7 @@ export interface Game extends mongoose.Document {
     abortGame: (playerIndex:number)=>void,
     shoot: (position:object)=>boolean,
     getGameState: (playerIndex:number, gridOwner:number)=>string,
-    getGrid: (userId:number, hideShips:boolean)=>string,
+    getGrid: (userId:number)=>string,
 }
 
 var gameSchema = new mongoose.Schema( {
@@ -262,7 +262,7 @@ gameSchema.methods.getGameState = function(playerIndex, gridOwner) {
  * @param {type} hideShips Hide unsunk ships
  * @returns {BattleshipGame.prototype.getGridState.battleshipGameAnonym$0}
  */
-gameSchema.methods.getGrid = function(userId, hideShips) {
+gameSchema.methods.getGrid = function(userId) {
     var matchedPlayer = null;
 
     var self = this;
@@ -280,7 +280,8 @@ gameSchema.methods.getGrid = function(userId, hideShips) {
     if(matchedPlayer != null){
         response = {
             shots: matchedPlayer.shots,
-            ships: hideShips ? matchedPlayer.getSunkShips() : matchedPlayer.ships
+            ships: matchedPlayer.ships,
+            sunkShips: matchedPlayer.getSunkShips()
         }
     }
 

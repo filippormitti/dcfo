@@ -133,7 +133,7 @@ Player.prototype.placeShip = function(x, y, horizontal, shipIndex) {
     if(!this.checkShipOverlap(ship) && !this.checkShipAdjacent(ship)) {
         // success - ship does not overlap or is adjacent to other ships
         // place ship array-index in shipGrid
-        gridIndex = ship.y * Settings.gridCols + ship.x;
+        var gridIndex = ship.y * Settings.gridCols + ship.x;
         for(i = 0; i < ship.size; i++) {
             this.shipGrid[gridIndex] = shipIndex;
             gridIndex += ship.horizontal ? 1 : Settings.gridCols;
@@ -187,26 +187,26 @@ Player.prototype.checkShipAdjacent = function(ship) {
     return false;
 }
 
-Player.prototype.createShips = function() {
-    var shipIndex, i, gridIndex, ship,
-        x = [1, 3, 5, 8, 8], y = [1, 2, 5, 2, 8],
-        horizontal = [false, true, false, false, true];
-
-    for(shipIndex = 0; shipIndex < Settings.ships.length; shipIndex++) {
-        ship = new Ship(Settings.ships[shipIndex]);
-        ship.horizontal = horizontal[shipIndex];
-        ship.x = x[shipIndex];
-        ship.y = y[shipIndex];
-
-        // place ship array-index in shipGrid
-        gridIndex = ship.y * Settings.gridCols + ship.x;
-        for(i = 0; i < ship.size; i++) {
-            this.shipGrid[gridIndex] = shipIndex;
-            gridIndex += ship.horizontal ? 1 : Settings.gridCols;
-        }
-
-        this.ships.push(ship);
-    }
-};
+// Player.prototype.createShips = function() {
+//     var shipIndex, i, gridIndex, ship,
+//         x = [1, 3, 5, 8, 8], y = [1, 2, 5, 2, 8],
+//         horizontal = [false, true, false, false, true];
+//
+//     for(shipIndex = 0; shipIndex < Settings.ships.length; shipIndex++) {
+//         ship = new Ship(Settings.ships[shipIndex]);
+//         ship.horizontal = horizontal[shipIndex];
+//         ship.x = x[shipIndex];
+//         ship.y = y[shipIndex];
+//
+//         // place ship array-index in shipGrid
+//         gridIndex = ship.y * Settings.gridCols + ship.x;
+//         for(i = 0; i < ship.size; i++) {
+//             this.shipGrid[gridIndex] = shipIndex;
+//             gridIndex += ship.horizontal ? 1 : Settings.gridCols;
+//         }
+//
+//         this.ships.push(ship);
+//     }
+// };
 
 module.exports = Player;
