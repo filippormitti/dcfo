@@ -118,7 +118,7 @@ Player.prototype.placeShip = function(x, y, horizontal, shipIndex) {
     ship.horizontal = horizontal;
 
     // save ship
-    this.ships.push(ship);
+    this.ships[shipIndex] = ship;
     console.log('this.ships= '+JSON.stringify(this.ships));
 
     // place ship in shipGrid
