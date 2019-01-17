@@ -381,7 +381,7 @@ app.get('/games/:id/battlefields/:userId', /*auth,*/ (req, res, next) => {
     console.log('get /games/:id/battlefields/:userId - reqParams='+JSON.stringify(req.params));
 
     game.getModel().findOne({ _id: req.params.id }).then((matchedGame) => {
-        ios.emit('broadcast', matchedGame );
+        // ios.emit('broadcast', matchedGame);
         // var hideShips = (req.params.hideShips === 'true') ? true : false;
         var grids = matchedGame.getGrid(req.params.userId);
 

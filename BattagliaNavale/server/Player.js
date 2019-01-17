@@ -129,6 +129,7 @@ Player.prototype.placeShip = function(x, y, horizontal, shipIndex) {
     console.log('this.ships= '+JSON.stringify(this.ships));
 
     // place ship in shipGrid
+    var placed = false;
     var i;
     if(!this.checkShipOverlap(ship) && !this.checkShipAdjacent(ship)) {
         // success - ship does not overlap or is adjacent to other ships
@@ -138,10 +139,19 @@ Player.prototype.placeShip = function(x, y, horizontal, shipIndex) {
             this.shipGrid[gridIndex] = shipIndex;
             gridIndex += ship.horizontal ? 1 : Settings.gridCols;
         }
-        return true;
+        placed = true;
     }
 
-    return false;
+    // check if all ships has been placed
+    var response = {
+        placed: placed,
+        all: this.ships.length == Settings.ships.length,
+    }
+    console.log('this.ships.length='+this.ships.length);
+    console.log('Settings.ships.length='+Settings.ships.length);
+    console.log('response='+JSON.stringify(response));
+
+    return response;
 }
 
 /**
@@ -187,26 +197,35 @@ Player.prototype.checkShipAdjacent = function(ship) {
     return false;
 }
 
-// Player.prototype.createShips = function() {
-//     var shipIndex, i, gridIndex, ship,
-//         x = [1, 3, 5, 8, 8], y = [1, 2, 5, 2, 8],
-//         horizontal = [false, true, false, false, true];
-//
-//     for(shipIndex = 0; shipIndex < Settings.ships.length; shipIndex++) {
-//         ship = new Ship(Settings.ships[shipIndex]);
-//         ship.horizontal = horizontal[shipIndex];
-//         ship.x = x[shipIndex];
-//         ship.y = y[shipIndex];
-//
-//         // place ship array-index in shipGrid
-//         gridIndex = ship.y * Settings.gridCols + ship.x;
-//         for(i = 0; i < ship.size; i++) {
-//             this.shipGrid[gridIndex] = shipIndex;
-//             gridIndex += ship.horizontal ? 1 : Settings.gridCols;
-//         }
-//
-//         this.ships.push(ship);
-//     }
-// };
+Player.prototype.getGrids = function() {
+    var Grids = {
+        shotsGrid: null,
+        shipsGrid: null
+    };
+    var lists = [this.shots, this.shipGrid];
+    var gridIndex;
+
+    for(gridIndex = 0; gridIndex < lists.length; gridIndex++)
+    {
+        var matrix = [], i, k;
+
+        for (i = 0, k = -1; i < lists[gridIndex].length; i++) {
+            if (i % 10 === 0) {
+                k++;
+                matrix[k] = [];
+            }
+            matrix[k].push(lists[gridIndex][i]);
+        }
+
+        if (gridIndex === 0){
+            Grids.shotsGrid = matrix;
+        }
+        else{
+            Grids.shipsGrid = matrix;
+        }
+    }
+
+    return Grids;
+};
 
 module.exports = Player;

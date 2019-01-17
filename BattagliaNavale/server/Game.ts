@@ -105,14 +105,21 @@ gameSchema.methods.placeShip = function (x, y, horizontal, shipIndex) {
     // convert Player from string to object
     var player = this.getPlayerFromIndex(this.currentPlayer);
 
-    var res = player.placeShip(x, y, horizontal, shipIndex);
+    var response = player.placeShip(x, y, horizontal, shipIndex);
+
     console.log('player.ships= '+JSON.stringify(player.ships));
+    console.log('player.ships= '+this.currentPlayer);
+
+    if (response.all){
+        this.switchPlayer();
+    }
 
     this.forceSave(player, this.currentPlayer);
 
+    console.log('player.ships= '+this.currentPlayer);
     console.log('gameSchema.methods.placeShip - end');
 
-    return res;
+    return response.placed;
 };
 
 gameSchema.methods.getPlayerFromIndex = function (playerIndex) {
@@ -214,7 +221,7 @@ gameSchema.methods.abortGame = function(playerIndex) {
  * @param {Object} position with x and y
  * @returns {boolean} True if shot was valid
  */
-gameSchema.methods.shoot = function(x,y) {
+gameSchema.methods.shoot = function(x, y) {
     var opponentPlayerIndex = this.currentPlayer === 0 ? 1 : 0;
     var gridIndex = y * Settings.gridCols + x;
 
@@ -263,27 +270,21 @@ gameSchema.methods.getGameState = function(playerIndex, gridOwner) {
  * @returns {BattleshipGame.prototype.getGridState.battleshipGameAnonym$0}
  */
 gameSchema.methods.getGrid = function(userId) {
-    var matchedPlayer = null;
+    var response = {};
 
     var self = this;
     this.players.forEach(function (playerString, index) {
         // console.log('gameSchema.methods.getGrid - playerString='+playerString+', index='+index);
         var player = self.getPlayerFromIndex(index);
         // console.log('gameSchema.methods.getGrid - player='+player.userId);
-        if (player.userId === userId){
-            matchedPlayer = player;
-            // console.log('gameSchema.methods.getGrid - matchedPlayer='+matchedPlayer.userId);
-        }
+        // if (player.userId === userId){
+        //     matchedPlayer = player;
+        //     // console.log('gameSchema.methods.getGrid - matchedPlayer='+matchedPlayer.userId);
+        // }
+        console.log('gameSchema.methods.getGrid - player.shots='+JSON.stringify(player.shots));
+        response[player.userId] = player.getGrids();
+        console.log('gameSchema.methods.getGrid - grids='+JSON.stringify(response[player.userId]));
     });
-    // console.log('gameSchema.methods.getGrid - matchedPlayer='+matchedPlayer.userId);
-    var response = null;
-    if(matchedPlayer != null){
-        response = {
-            shots: matchedPlayer.shots,
-            ships: matchedPlayer.ships,
-            sunkShips: matchedPlayer.getSunkShips()
-        }
-    }
 
     return response;
 };
