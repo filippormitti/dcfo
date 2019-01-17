@@ -259,8 +259,11 @@ Player.prototype.getSmartGrid = function() {
         grid[i] = {
             shot: this.shots[i],
             ship: this.shipGrid[i],
-            sunk: ship.hits >= ship.size
         };
+        if (ship != null && ship != undefined){
+            grid[i].sunk = ship.hits >= ship.size;
+
+        }
     }
 
     return grid;
