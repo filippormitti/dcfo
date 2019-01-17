@@ -52,7 +52,7 @@ gameSchema.methods.join = function (userId) {
     if (this.players.length < 2) {
         var player = new Player(userId);
         this.players.push(JSON.stringify(player));
-        this.gameStatus = GameStatus.inProgress;
+        this.gameStatus = GameStatus.ply1ShipsPlacement;
         this.save();
     }
     console.log('gameSchema.methods.join - end');
@@ -67,6 +67,7 @@ gameSchema.methods.placeShip = function (x, y, horizontal, shipIndex) {
     console.log('player.ships= ' + this.currentPlayer);
     if (response.all) {
         this.switchPlayer();
+        this.gameStatus = (this.gameStatus === GameStatus.ply1ShipsPlacement) ? GameStatus.ply2ShipsPlacement : GameStatus.inProgress;
     }
     this.forceSave(player, this.currentPlayer);
     console.log('player.ships= ' + this.currentPlayer);
@@ -162,23 +163,33 @@ gameSchema.methods.abortGame = function (playerIndex) {
 gameSchema.methods.shoot = function (x, y) {
     var opponentPlayerIndex = this.currentPlayer === 0 ? 1 : 0;
     var gridIndex = y * Settings.gridCols + x;
+    var response = {
+        valid: false,
+        hit: false,
+        gameOver: false
+    };
     // convert Player from string to object
     var opponentPlayer = this.getPlayerFromIndex(opponentPlayerIndex);
+    // console.log('this.gameStatus='+this.gameStatus);
+    //     console.log('gridIndex='+gridIndex);
+    //     console.log('opponentPlayer.shots[gridIndex]='+opponentPlayer.shots[gridIndex]);
     if (opponentPlayer.shots[gridIndex] === 0 && this.gameStatus === GameStatus.inProgress) {
-        // Square has not been shot at yet.
-        if (!opponentPlayer.shoot(gridIndex)) {
-            // Miss
-            this.switchPlayer();
+        response.valid = true;
+        // shoot
+        if (opponentPlayer.shoot(gridIndex)) {
+            // hit
+            response.hit = true;
         }
+        this.switchPlayer();
         // Check if game over
         if (opponentPlayer.getShipsLeft() <= 0) {
             this.gameStatus = GameStatus.gameOver;
             this.winningPlayer = opponentPlayerIndex === 0 ? 1 : 0;
+            response.gameOver = true;
         }
         this.forceSave(opponentPlayer, opponentPlayerIndex);
-        return true;
     }
-    return false;
+    return response;
 };
 /**
  * Get game state update (for one grid).
@@ -199,7 +210,7 @@ gameSchema.methods.getGameState = function (playerIndex, gridOwner) {
  * @param {type} hideShips Hide unsunk ships
  * @returns {BattleshipGame.prototype.getGridState.battleshipGameAnonym$0}
  */
-gameSchema.methods.getGrid = function (userId) {
+gameSchema.methods.getGrids = function () {
     var response = {};
     var self = this;
     this.players.forEach(function (playerString, index) {
@@ -211,7 +222,7 @@ gameSchema.methods.getGrid = function (userId) {
         //     // console.log('gameSchema.methods.getGrid - matchedPlayer='+matchedPlayer.userId);
         // }
         console.log('gameSchema.methods.getGrid - player.shots=' + JSON.stringify(player.shots));
-        response[player.userId] = player.getGrids();
+        response[player.userId] = player.getSmartGrid();
         console.log('gameSchema.methods.getGrid - grids=' + JSON.stringify(response[player.userId]));
     });
     return response;

@@ -23,9 +23,9 @@ export interface Game extends mongoose.Document {
     getLoserId: ()=>string,
     switchPlayer: ()=>void,
     abortGame: (playerIndex:number)=>void,
-    shoot: (x:number,y:number)=>boolean,
+    shoot: (x:number, y:number)=>object,
     getGameState: (playerIndex:number, gridOwner:number)=>string,
-    getGrid: (userId:number)=>string,
+    getGrids: ()=>string,
 }
 
 var gameSchema = new mongoose.Schema( {
@@ -45,7 +45,7 @@ var gameSchema = new mongoose.Schema( {
         type: [mongoose.SchemaTypes.String],
         required: false
     },
-})
+});
 
 
 
@@ -90,7 +90,7 @@ gameSchema.methods.join = function (userId) {
     if (this.players.length < 2){
         var player = new Player(userId);
         this.players.push(JSON.stringify(player));
-        this.gameStatus = GameStatus.inProgress;
+        this.gameStatus = GameStatus.ply1ShipsPlacement;
         this.save();
     }
 
@@ -112,6 +112,7 @@ gameSchema.methods.placeShip = function (x, y, horizontal, shipIndex) {
 
     if (response.all){
         this.switchPlayer();
+        this.gameStatus = (this.gameStatus === GameStatus.ply1ShipsPlacement) ? GameStatus.ply2ShipsPlacement : GameStatus.inProgress;
     }
 
     this.forceSave(player, this.currentPlayer);
@@ -214,7 +215,7 @@ gameSchema.methods.abortGame = function(playerIndex) {
   this.gameStatus = GameStatus.gameOver;
   this.winningPlayer = playerIndex === 0 ? 1 : 0;
   this.save();
-}
+};
 
 /**
  * Fire shot for current player
@@ -224,29 +225,39 @@ gameSchema.methods.abortGame = function(playerIndex) {
 gameSchema.methods.shoot = function(x, y) {
     var opponentPlayerIndex = this.currentPlayer === 0 ? 1 : 0;
     var gridIndex = y * Settings.gridCols + x;
+    var response = {
+        valid: false,
+        hit: false,
+        gameOver: false
+    }
 
     // convert Player from string to object
     var opponentPlayer = this.getPlayerFromIndex(opponentPlayerIndex);
 
+// console.log('this.gameStatus='+this.gameStatus);
+//     console.log('gridIndex='+gridIndex);
+//     console.log('opponentPlayer.shots[gridIndex]='+opponentPlayer.shots[gridIndex]);
+
     if(opponentPlayer.shots[gridIndex] === 0 && this.gameStatus === GameStatus.inProgress) {
-        // Square has not been shot at yet.
-        if(!opponentPlayer.shoot(gridIndex)) {
-            // Miss
-            this.switchPlayer();
+        response.valid = true;
+        // shoot
+        if(opponentPlayer.shoot(gridIndex)) {
+            // hit
+            response.hit = true;
         }
+        this.switchPlayer();
 
         // Check if game over
         if(opponentPlayer.getShipsLeft() <= 0) {
             this.gameStatus = GameStatus.gameOver;
             this.winningPlayer = opponentPlayerIndex === 0 ? 1 : 0;
+            response.gameOver = true;
         }
 
         this.forceSave(opponentPlayer, opponentPlayerIndex);
-
-        return true;
     }
 
-    return false;
+    return response;
 };
 
 /**
@@ -269,7 +280,7 @@ gameSchema.methods.getGameState = function(playerIndex, gridOwner) {
  * @param {type} hideShips Hide unsunk ships
  * @returns {BattleshipGame.prototype.getGridState.battleshipGameAnonym$0}
  */
-gameSchema.methods.getGrid = function(userId) {
+gameSchema.methods.getGrids = function() {
     var response = {};
 
     var self = this;
@@ -282,7 +293,7 @@ gameSchema.methods.getGrid = function(userId) {
         //     // console.log('gameSchema.methods.getGrid - matchedPlayer='+matchedPlayer.userId);
         // }
         console.log('gameSchema.methods.getGrid - player.shots='+JSON.stringify(player.shots));
-        response[player.userId] = player.getGrids();
+        response[player.userId] = player.getSmartGrid();
         console.log('gameSchema.methods.getGrid - grids='+JSON.stringify(response[player.userId]));
     });
 

@@ -1,6 +1,8 @@
 module.exports = {
   waitingPlayer: 0,
-  inProgress: 1,
-  gameOver: 2
+  ply1ShipsPlacement: 1,
+  ply2ShipsPlacement: 2,
+  inProgress: 3,
+  gameOver: 4
 };
 
