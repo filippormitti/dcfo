@@ -117,13 +117,10 @@ Player.prototype.placeShip = function(x, y, horizontal, shipIndex) {
     ship.y = y;
     ship.horizontal = horizontal;
 
-<<<<<<< HEAD
     // save ship
     this.ships[shipIndex]=(ship);
     console.log('this.ships= '+JSON.stringify(this.ships));
 
-=======
->>>>>>> ac1f224f0276f4ee0536a718c7a2daa4fb5a7619
     // place ship in shipGrid
     var placed = false;
     var i;
