@@ -222,7 +222,7 @@ gameSchema.methods.getGrids = function () {
         //     // console.log('gameSchema.methods.getGrid - matchedPlayer='+matchedPlayer.userId);
         // }
         console.log('gameSchema.methods.getGrid - player.shots=' + JSON.stringify(player.shots));
-        response[player.userId] = player.getSmartGrid();
+        response['player'+index] = player.getSmartGrid();
         console.log('gameSchema.methods.getGrid - grids=' + JSON.stringify(response[player.userId]));
     });
     return response;

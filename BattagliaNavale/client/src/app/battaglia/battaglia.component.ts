@@ -1,3 +1,4 @@
+import { Player } from './../Player';
 
 import { Ship } from './../Ship';
 import { Board} from './../Battaglia';
@@ -34,6 +35,9 @@ portaindex=8;
 myindex: number;
 turno:boolean;
 setnave=true;
+myGrid
+opponentGrid
+
 
 
 
@@ -51,9 +55,9 @@ setnave=true;
   this.Cacciatorpediniere.horizontal=true;
   this.Corazzata.horizontal=true;
   this.Portaerei.horizontal=true;
+
    }
   
-
  
   ngOnInit() {
     this.route.params.subscribe((params) => this.gameid = params.gameid
@@ -73,6 +77,7 @@ setnave=true;
      this.partita = games;
       console.log('assegno partita');
       this.get_turn();
+      this.get_grid();
      this.loaded=true;
    } , (err) => {
 
@@ -88,6 +93,39 @@ setnave=true;
    }
  );
 }
+
+public get_grid() {
+  this.gm.get_grid(this.gameid).subscribe(
+ ( grids) => {
+   if((this.findOpponent(this.us.get_id()))==0){
+     this.myGrid = grids.player1;
+     console.log('MYgrids vale '+JSON.stringify(this.myGrid));
+   this.opponentGrid=grids.player0;
+      console.log('Opponent vale '+JSON.stringify(this.opponentGrid));
+   }
+   else{
+    this.myGrid = grids.player0;
+    console.log('MYgrids vale '+JSON.stringify(this.myGrid));
+  this.opponentGrid=grids.player1;
+     console.log('Opponent vale '+JSON.stringify(this.opponentGrid));
+  }
+
+    console.log('assegno partita');
+    
+ } , (err) => {
+
+
+   // Try to renew the token
+   this.us.renew().subscribe( () => {
+     // Succeeded
+     this.get_game();
+   }, (err2) => {
+     // Error again, we really need to logout
+    // this.logout();
+   } );
+ }
+);
+}
 public ruota(ship:Ship){
   if (ship.horizontal)
   ship.horizontal=false;
@@ -102,6 +140,8 @@ public get_turn(){
 
   this.gm.get_turn(this.gameid,this.us.get_id()).subscribe(
     ( turno ) => {
+console.log('id opponent è = '+ this.findOpponent(this.us.get_id()))
+console.log('il mio id è = '+ this.us.get_id())
       this.turno = turno;
       console.log('turno vale'+turno);
          } , (err) => {
@@ -118,6 +158,12 @@ public get_turn(){
     }
   );
  }
+public findOpponent(id:string){
+  var user = JSON.parse(this.partita.players[0]);
+  if(id!=user.userId)
+  return 0
+  else return 1
+}
 
  public setShip(selected:Ship,horizontal:boolean){
   this.setnave=true;
@@ -212,10 +258,11 @@ public get_turn(){
  
 
   
-  isHit(col: number, row:number){
-   //  if(this.MyPartita.shipGrid[row][col]==1)
+  isBoat(col: number, row:number){
+     var index= row*10+col
+   if(this.myGrid[index].ship!=-1)
     return true;
-  //  return false;
+   return false;
   }
       
   logout() {

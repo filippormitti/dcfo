@@ -62,6 +62,11 @@ export class PartiteHttpService {
                 catchError( this.handleError )
       );
   }
+  get_grid(id:string): Observable<object[]> {
+    return this.http.get<object[]>( this.us.url + '/games/'+id+'/battlefields', this.create_options({limit: '10', skip: '0'}   )).pipe(
+               catchError( this.handleError )
+     );
+ }
   join_game(dati:object): Observable<boolean> {
         return this.http.post<object>( this.us.url + '/games/join', dati,this.create_options({limit: '10', skip: '0'}   )).pipe(
        

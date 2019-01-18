@@ -1,6 +1,7 @@
 import { Ship } from './Ship';
 export interface Player {
-    _id:string;
+    id:string;
+    userId:string;
     shots: number[];
     shipGrid: number[];
     ships: Ship[];

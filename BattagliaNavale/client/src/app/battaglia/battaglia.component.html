@@ -2,14 +2,15 @@
 <body *ngIf="loaded">
       <a > Partita :{{gameid}}</a>
       <div *ngIf='partita.gameStatus== 0'> Attesa secondo giocatore</div>
-      <div *ngIf='partita.gameStatus== 2'> Partita finita</div>
-      <div *ngIf='partita.gameStatus== 1'>
+      <div *ngIf='partita.gameStatus== 4'> Partita finita</div>
+      <div *ngIf='(partita.gameStatus== 2)||(partita.gameStatus== 1)||(partita.gameStatus== 3)'>
        <h1  *ngIf='!(turno)'> Non è il tuo turno attendi avversario..</h1>
     <div *ngIf='turno'>
-          <div>
-          <label>Opponent</label>
-        </div>
-        <div id="board">
+         
+        <div *ngIf='partita.gameStatus== 3' id="board">
+            <div>
+                <label>Opponent</label>
+              </div>
         <table>
             <tr *ngFor="let row of OpponentBoard.matrix">
                 <td (click)="fire(col.x, col.y,gameid)" *ngFor="let col of row" [ngClass]="{'miss': (col.attacked && !col.hasboat), 'hit': (col.attacked && col.hasboat) }"></td>
@@ -35,7 +36,7 @@
         
         <table>
             <tr *ngFor="let row of MyBoard.matrix">
-                <td (click)="post_ship(col.y,col.x,gameid,myindex,MyShip.horizontal)" *ngFor="let col of row" [ngClass]="{'hit': isHit(col.y,col.x)} "></td>
+                <td (click)="post_ship(col.y,col.x,gameid,myindex,MyShip.horizontal)" *ngFor="let col of row" [ngClass]="{'boat': isBoat(col.y,col.x)} "></td>
             </tr>
         </table>
 

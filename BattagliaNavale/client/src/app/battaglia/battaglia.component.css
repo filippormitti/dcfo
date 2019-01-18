@@ -10,6 +10,11 @@ div#board {
 	background: url("../../assets/ship.png") no-repeat center center;
 	background-size: 15px 15px;
 }
+.boat {
+	background: url("../../assets/ship.png") no-repeat center center;
+	background-size: 15px 15px;
+}
+
 .miss {
 	background: url("../../assets/miss.png") no-repeat center center;
 	background-size: 15px 15px;

@@ -9,6 +9,7 @@ import { Observable } from 'rxjs/Observable';
 @Injectable()
 export class PartiteService {
     private partite = [];
+  
   constructor() { }
   
   
@@ -20,6 +21,9 @@ export class PartiteService {
     return of( this.partite );
   }
   get_gameid(id:string ): Observable<any> {
+    return of( this.partite );
+  }
+  get_grid(id:string ): Observable<any> {
     return of( this.partite );
   }
   get_turn( game:string,id:string ): Observable<boolean> {

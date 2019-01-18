@@ -3,7 +3,7 @@ export interface Game {
     _id:string;
     currentPlayer: number;
     winningPlayer: string;
-    players:Player[];
+    players:string[];
     gameStatus: number;
    
 }
