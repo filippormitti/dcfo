@@ -117,10 +117,13 @@ Player.prototype.placeShip = function(x, y, horizontal, shipIndex) {
     ship.y = y;
     ship.horizontal = horizontal;
 
+<<<<<<< HEAD
     // save ship
     this.ships[shipIndex]=(ship);
     console.log('this.ships= '+JSON.stringify(this.ships));
 
+=======
+>>>>>>> ac1f224f0276f4ee0536a718c7a2daa4fb5a7619
     // place ship in shipGrid
     var placed = false;
     var i;
@@ -132,13 +135,17 @@ Player.prototype.placeShip = function(x, y, horizontal, shipIndex) {
             this.shipGrid[gridIndex] = shipIndex;
             gridIndex += ship.horizontal ? 1 : Settings.gridCols;
         }
+        // save ship
+        this.ships[shipIndex] = ship;
+        console.log('this.ships= '+JSON.stringify(this.ships));
+
         placed = true;
     }
 
     // check if all ships has been placed
     var response = {
         placed: placed,
-        all: this.ships.length == Settings.ships.length,
+        all: this.areShipsPlaced(),
     };
 
     console.log('this.ships.length='+this.ships.length);
@@ -146,6 +153,16 @@ Player.prototype.placeShip = function(x, y, horizontal, shipIndex) {
     console.log('response='+JSON.stringify(response));
 
     return response;
+};
+
+Player.prototype.areShipsPlaced = function() {
+    var allPlaced = true;
+
+    for (var i=0; i < Settings.ships.length; i++){
+        if (this.ships[i] == undefined || this.ships[i] == null){
+            allPlaced = false;
+        }
+    }
 };
 
 /**
