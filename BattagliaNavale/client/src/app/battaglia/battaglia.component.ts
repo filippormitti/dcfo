@@ -258,12 +258,37 @@ public findOpponent(id:string){
  
 
   
-  isBoat(col: number, row:number){
+  hasBoat(col: number, row:number){
      var index= row*10+col
    if(this.myGrid[index].ship!=-1)
     return true;
    return false;
   }
+  myGridisSunk(col: number, row:number){
+    var index= row*10+col
+  if((this.myGrid[index].sunk!=null) && (this.myGrid[index].sunk!!= undefined))
+   return this.myGrid[index].sunk;
+  return false;
+  }
+  opponentSunk(col: number, row:number){
+    var index= row*10+col
+  if((this.opponentGrid[index].sunk!=null) && (this.opponentGrid[index].sunk!!= undefined))
+   return this.opponentGrid[index].sunk;
+  return false;
+  }
+
+  myGridIsHit(col: number, row:number){
+    var index= row*10+col
+  return this.myGrid[index].shot
+  
+ }
+ opponentIsHit(col: number, row:number){
+  var index= row*10+col
+if(this.opponentGrid[index].shot==2)
+return true;
+if(this.opponentGrid[index].shot==1)
+return false;
+}
       
   logout() {
     this.us.logout();
