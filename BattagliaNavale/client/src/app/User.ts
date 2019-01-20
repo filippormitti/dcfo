@@ -5,7 +5,7 @@ export interface User {
     roles:string;
     salt:string;
     digest:string;
-    win:number;
+    won:number;
     lost:number;
     played:number;
 }
