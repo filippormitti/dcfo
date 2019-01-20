@@ -1,6 +1,7 @@
 var Ship = require('./Ship.js');
 var Settings = require('./settings.js');
 
+
 /**
  * Player constructor
  * @param {type} id Socket ID
@@ -18,18 +19,6 @@ function Player(userId) {
         this.shipGrid[i] = -1;
     }
 };
-
-// Player.prototype.getShipFromString = function (string) {
-//     var oPlayer = JSON.parse(string);
-//     // console.log('oPlayer= '+JSON.stringify(oPlayer));
-//     var player = new Player(oPlayer.userId);
-//     player.shipGrid = oPlayer.shipGrid;
-//     player.ships = oPlayer.ships;
-//     player.shots = oPlayer.shots;
-//     // console.log('player.userId= '+player.userId);
-//
-//     return player;
-// };
 
 /**
  * Fire shot on grid
@@ -57,7 +46,6 @@ Player.prototype.getSunkShips = function() {
     var i, sunkShips = [];
 
     for(i = 0; i < this.ships.length; i++) {
-        // console.log('Player.prototype.getSunkShips - this.ships[i]='+JSON.stringify(this.ships[i]));
         if(this.ships[i].hits >= this.ships[i].size) {
             sunkShips.push(this.ships[i]);
         }
@@ -83,35 +71,13 @@ Player.prototype.getShipsLeft = function() {
     return shipCount;
 };
 
-// /**
-//  * Create ships and place them randomly in grid
-//  * @returns {Boolean}
-//  */
-// Player.prototype.createRandomShips = function() {
-//     var shipIndex;
-//
-//     for(shipIndex = 0; shipIndex < Settings.ships.length; shipIndex++) {
-//         ship = new Ship(Settings.ships[shipIndex]);
-//
-//         if(!this.placeShipRandom(ship, shipIndex)) {
-//             return false;
-//         }
-//
-//         this.ships.push(ship);
-//     }
-//
-//     return true;
-// };
-
 /**
- * Try to place a ship randomly in grid without overlapping another ship.
+ * Try to place a ship in grid without overlapping another ship.
  * @param {Ship} ship
  * @param {Number} shipIndex
  * @returns {Boolean}
  */
 Player.prototype.placeShip = function(x, y, horizontal, shipIndex) {
-    // console.log('Player.prototype.placeShip - start');
-
     // create ship
     var ship = new Ship(Settings.ships[shipIndex]);
     ship.x = x;
@@ -141,10 +107,7 @@ Player.prototype.placeShip = function(x, y, horizontal, shipIndex) {
         placemCompleted: this.isPlacemCompleted(),
     };
 
-    // console.log('this.ships.length='+this.ships.length);
-    // console.log('Settings.ships.length='+Settings.ships.length);
     // console.log('response='+JSON.stringify(response));
-
     return response;
 };
 
@@ -202,64 +165,6 @@ Player.prototype.checkShipAdjacent = function(ship) {
 
     return false;
 };
-
-// Player.prototype.getGrids = function() {
-//     var Grids = {
-//         shotsGrid: null,
-//         shipsGrid: null
-//     };
-//     // var grid = [];
-//     var lists = [this.shots, this.shipGrid];
-//     var gridIndex;
-//
-//     // for(gridIndex = 0; gridIndex < lists.length; gridIndex++)
-//     // {
-//     //     var matrix = [], i, k;
-//     //
-//     //     for (i = 0, k = -1; i < lists[gridIndex].length; i++) {
-//     //         if (i % 10 === 0) {
-//     //             k++;
-//     //             matrix[k] = [];
-//     //         }
-//     //         matrix[k].push(lists[gridIndex][i]);
-//     //     }
-//     //
-//     //     if (gridIndex === 0){
-//     //         Grids.shotsGrid = matrix;
-//     //     }
-//     //     else{
-//     //         Grids.shipsGrid = matrix;
-//     //     }
-//     // }
-//
-//     var matrix = [], i, j, k;
-//
-//     for (i = 0, k = -1; i < this.shots.length; i++) {
-//         if (i % 10 === 0) {
-//             k++;
-//             matrix[k] = [];
-//         }
-//         var Cell = {
-//             shot: this.shots[i]
-//         };
-//         matrix[k].push(Cell);
-//     }
-//     for (i = 0; i < this.shipGrid.length; i++) {
-//         for (j = 0; j < Settings.gridCols; j++) {
-//             matrix[i][].ship = this.shipGrid[i];
-//         }
-//     }
-//
-//     // if (gridIndex === 0){
-//     //     Grids.shotsGrid = matrix;
-//     // }
-//     // else{
-//     //     Grids.shipsGrid = matrix;
-//     // }
-//
-//
-//     return Grids;
-// };
 
 Player.prototype.getSmartGrid = function() {
     var grid = [];

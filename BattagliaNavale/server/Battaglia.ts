@@ -312,6 +312,7 @@ app.post('/games', (req,res,next) => {
   var g = game.newGame( req.body.user1Id );
   g.save().then( (data) => {
     ios.emit('broadcast', data );
+
     return res.status(200).json(data);
   }).catch( (reason) => {
     if( reason.code === 11000 )
@@ -324,24 +325,10 @@ app.post('/games/join', /*auth,*/ (req,res,next) => {
     console.log('post /games/join - reqBody='+JSON.stringify(req.body));
 
     game.getModel().findOne({_id: req.body.id}).then( (matchedGame)=> {
-      ios.emit('broadcast', matchedGame );
-
+        ios.emit('broadcast', matchedGame );
         var playerId = matchedGame.join(req.body.userId);
-        // console.log('playerId='+playerId);
 
-        // player.getModel().findOne({_id: playerId}).then( (matchedPlayer)=> {
-        //     ios.emit('broadcast', matchedPlayer );
-        //     console.log('matchedPlayer='+JSON.stringify(matchedPlayer));
-        //     console.log('matchedPlayer.userId='+matchedPlayer.userId);
-        //     matchedPlayer.userId = '999999999';
-        //     console.log('matchedPlayer.userId='+matchedPlayer.userId);
-        //     matchedPlayer.save();
-        //
-        //     return res.status(200).json(true);
-        // }).catch( (reason) => {
-        //     return next({ statusCode:404, error: true, errormessage: "DB error: "+reason });
-        // });
-        return res.status(200).json(true);
+        return res.status(200).json(playerId);
     }).catch( (reason) => {
         return next({ statusCode:404, error: true, errormessage: "DB error: "+reason });
     });
@@ -352,8 +339,8 @@ app.get('/games/:id/turn/:userId', /*auth,*/ (req, res, next) => {
     console.log('get /games/:id/turn/:userId - reqParams='+JSON.stringify(req.params));
 
     game.getModel().findOne({ _id: req.params.id }).then((matchedGame) => {
-    //    ios.emit('broadcast', matchedGame );
         var turn = matchedGame.isMyTurn(req.params.userId);
+
         return res.status(200).json(turn);
     }).catch((reason) => {
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
@@ -365,7 +352,6 @@ app.post('/games/shot', /*auth,*/ (req,res,next) => {
 
     game.getModel().findOne({_id: req.body.id}).then( (matchedGame)=> {
         ios.emit('broadcast', matchedGame );
-
         var outcome = matchedGame.shoot(req.body.x, req.body.y);
 
         return res.status(200).json(outcome);
@@ -380,7 +366,6 @@ app.get('/games/:id/battlefields/:userId', /*auth,*/ (req, res, next) => {
     console.log('get /games/:id/battlefields/:userId - reqParams='+JSON.stringify(req.params));
 
     game.getModel().findOne({ _id: req.params.id }).then((matchedGame) => {
-        // ios.emit('broadcast', matchedGame);
         var grids = matchedGame.getGrids(req.params.userId);
 
         return res.status(200).json(grids);
@@ -388,21 +373,6 @@ app.get('/games/:id/battlefields/:userId', /*auth,*/ (req, res, next) => {
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
     });
 });
-
-// url example: 'http://localhost:8080/games/5c36861ba1357722467f5a59/battlefields/0123/position/'
-// app.get('/games/:id/battlefields/:userId/position/:position', /*auth,*/ (req, res, next) => {
-//     console.log('get /games/:id/battlefields/:userId/position/:position - reqParams='+JSON.stringify(req.params));
-//
-//     game.getModel().findOne({ _id: req.params.id }).then((matchedGame) => {
-//         ios.emit('broadcast', matchedGame );
-//         // var hideShips = (req.params.hideShips === 'true') ? true : false;
-//         var outcome = matchedGame.getGrid(req.params.userId, req.params.position);
-//
-//         return res.status(200).json(outcome);
-//     }).catch((reason) => {
-//         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
-//     });
-// });
 
 //***************************** ships *******************************
 app.post('/ships', /*auth,*/ (req,res,next) => {

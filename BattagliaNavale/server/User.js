@@ -22,19 +22,19 @@ var userSchema = new mongoose.Schema({
     },
     digest: {
         type: mongoose.SchemaTypes.String,
-        required: false,
-        win: {
-            type: mongoose.SchemaTypes.Number,
-            required: false
-        },
-        lost: {
-            type: mongoose.SchemaTypes.Number,
-            required: false
-        },
-        played: {
-            type: mongoose.SchemaTypes.Number,
-            required: false
-        }
+        required: false
+    },
+    won: {
+        type: mongoose.SchemaTypes.Number,
+        required: false
+    },
+    lost: {
+        type: mongoose.SchemaTypes.Number,
+        required: false
+    },
+    played: {
+        type: mongoose.SchemaTypes.Number,
+        required: false
     }
 });
 // Here we add some methods to the user Schema

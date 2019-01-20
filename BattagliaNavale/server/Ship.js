@@ -10,12 +10,4 @@ function Ship(size) {
     this.horizontal = false;
 }
 
-/**
- * Check if ship is sunk
- * @returns {Boolean}
- */
-Ship.prototype.isSunk = function() {
-    return this.hits >= this.size;
-};
-
 module.exports = Ship;

@@ -1,4 +1,3 @@
-
 import mongoose = require('mongoose');
 import crypto = require('crypto');
 
@@ -10,7 +9,7 @@ export interface User extends mongoose.Document {
     roles: string[],
     salt: string,
     digest: string,
-    win:number,
+    won:number,
     lost:number,
     played:number,
     setPassword: (pwd:string)=>void,
@@ -41,19 +40,19 @@ var userSchema = new mongoose.Schema( {
     },
     digest:  {
         type: mongoose.SchemaTypes.String,
-        required: false ,
-        win: {
-            type: mongoose.SchemaTypes.Number,
-            required: false
-        },
-        lost: {
-            type: mongoose.SchemaTypes.Number,
-            required: false
-        },
-        played: {
-            type: mongoose.SchemaTypes.Number,
-            required: false
-        }
+        required: false
+    },
+    won: {
+        type: mongoose.SchemaTypes.Number,
+        required: false
+    },
+    lost: {
+        type: mongoose.SchemaTypes.Number,
+        required: false
+    },
+    played: {
+        type: mongoose.SchemaTypes.Number,
+        required: false
     }
 })
 
