@@ -301,10 +301,9 @@ app.post('/games/shot', /*auth,*/ (req, res, next) => {
 //***************************** games/battlefields *******************************
 // url example: 'http://localhost:8080/games/5c36861ba1357722467f5a59/battlefields/0123'
 app.get('/games/:id/battlefields', /*auth,*/ (req, res, next) => {
-    // console.log('get /games/:id/battlefields - reqParams='+JSON.stringify(req.params));
+    console.log('get /games/:id/battlefields - reqParams=' + JSON.stringify(req.params));
     game.getModel().findOne({ _id: req.params.id }).then((matchedGame) => {
         // ios.emit('broadcast', matchedGame);
-        // var hideShips = (req.params.hideShips === 'true') ? true : false;
         var grids = matchedGame.getGrids();
         return res.status(200).json(grids);
     }).catch((reason) => {
@@ -331,22 +330,6 @@ app.post('/ships', /*auth,*/ (req, res, next) => {
     game.getModel().findOne({ _id: req.body.gameId }).then((matchedGame) => {
         ios.emit('broadcast', matchedGame);
         var result = matchedGame.placeShip(req.body.x, req.body.y, req.body.horizontal, req.body.shipIndex);
-        // player.getModel().findOne({_id: playerId}).then( (matchedPlayer)=> {
-        //     ios.emit('broadcast', matchedPlayer );
-        //
-        //     // console.log('matchedPlayer='+JSON.stringify(matchedPlayer));
-        //     // console.log('matchedPlayer.userId='+matchedPlayer.userId);
-        //     // matchedPlayer.userId = '999999999';
-        //     // console.log('matchedPlayer.userId='+matchedPlayer.userId);
-        //     // matchedPlayer.save();
-        //
-        //     // matchedPlayer.placeShip();
-        //
-        //
-        //     return res.status(200).json(true);
-        // }).catch( (reason) => {
-        //     return next({ statusCode:404, error: true, errormessage: "DB error: "+reason });
-        // });
         return res.status(200).json(result);
     }).catch((reason) => {
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });

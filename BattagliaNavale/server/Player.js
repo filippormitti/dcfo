@@ -74,7 +74,8 @@ Player.prototype.getShipsLeft = function() {
     var i, shipCount = 0;
 
     for(i = 0; i < this.ships.length; i++) {
-        if(!this.ships[i].hits >= this.ships[i].size) {
+        if(this.ships[i] != undefined && this.ships[i] != null
+            && this.ships[i].hits < this.ships[i].size) {
             shipCount++;
         }
     }
@@ -117,10 +118,6 @@ Player.prototype.placeShip = function(x, y, horizontal, shipIndex) {
     ship.y = y;
     ship.horizontal = horizontal;
 
-    // save ship
-    this.ships[shipIndex]=(ship);
-    // console.log('this.ships= '+JSON.stringify(this.ships));
-
     // place ship in shipGrid
     var placed = false;
     var i;
@@ -132,10 +129,9 @@ Player.prototype.placeShip = function(x, y, horizontal, shipIndex) {
             this.shipGrid[gridIndex] = shipIndex;
             gridIndex += ship.horizontal ? 1 : Settings.gridCols;
         }
+
         // save ship
         this.ships[shipIndex] = ship;
-        // console.log('this.ships= '+JSON.stringify(this.ships));
-
         placed = true;
     }
 

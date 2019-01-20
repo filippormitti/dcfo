@@ -62,16 +62,17 @@ gameSchema.methods.placeShip = function (x, y, horizontal, shipIndex) {
     // convert Player from string to object
     var player = this.getPlayerFromIndex(this.currentPlayer);
     var response = player.placeShip(x, y, horizontal, shipIndex);
-    console.log('gameSchema.methods.placeShip - player.ships= ' + JSON.stringify(player.ships));
-    console.log('gameSchema.methods.placeShip - this.currentPlayer= ' + this.currentPlayer);
-    console.log('gameSchema.methods.placeShip - response= ' + JSON.stringify(response));
-    if (response.placemCompleted) {
+    // console.log('gameSchema.methods.placeShip - player.ships= '+JSON.stringify(player.ships));
+    // console.log('gameSchema.methods.placeShip - this.currentPlayer= '+this.currentPlayer);
+    // console.log('gameSchema.methods.placeShip - response= '+JSON.stringify(response));
+    if (response != undefined && response != null && response.placed) {
+        this.forceSave(player, this.currentPlayer);
+    }
+    if (response != undefined && response != null && response.placemCompleted) {
         this.switchPlayer();
         this.gameStatus = (this.gameStatus === GameStatus.ply1ShipsPlacement) ? GameStatus.ply2ShipsPlacement : GameStatus.inProgress;
+        this.save();
     }
-    console.log('gameSchema.methods.placeShip - before forceSave');
-    this.forceSave(player, this.currentPlayer);
-    console.log('gameSchema.methods.placeShip - after forceSave');
     return response.placed;
 };
 gameSchema.methods.getPlayerFromIndex = function (playerIndex) {
@@ -170,9 +171,9 @@ gameSchema.methods.shoot = function (x, y) {
     };
     // convert Player from string to object
     var opponentPlayer = this.getPlayerFromIndex(opponentPlayerIndex);
-    // console.log('this.gameStatus='+this.gameStatus);
-    //     console.log('gridIndex='+gridIndex);
-    //     console.log('opponentPlayer.shots[gridIndex]='+opponentPlayer.shots[gridIndex]);
+    console.log('this.gameStatus=' + this.gameStatus);
+    console.log('gridIndex=' + gridIndex);
+    // console.log('opponentPlayer.shots[gridIndex]='+opponentPlayer.shots[gridIndex]);
     if (opponentPlayer.shots[gridIndex] === 0 && this.gameStatus === GameStatus.inProgress) {
         response.valid = true;
         // shoot
@@ -221,7 +222,7 @@ gameSchema.methods.getGrids = function () {
         //     matchedPlayer = player;
         //     // console.log('gameSchema.methods.getGrid - matchedPlayer='+matchedPlayer.userId);
         // }
-        // console.log('gameSchema.methods.getGrid - player.shots='+JSON.stringify(player.shots));
+        console.log('gameSchema.methods.getGrid - player.shots=' + JSON.stringify(player.shots));
         response['player' + index] = player.getSmartGrid();
         // console.log('gameSchema.methods.getGrid - grids='+JSON.stringify(response[player.userId]));
     });
