@@ -236,7 +236,14 @@ gameSchema.methods.shoot = function(x, y) {
             this.gameStatus = GameStatus.gameOver;
             this.winningPlayer = (opponentPlayerIndex === 0) ? 1 : 0;
             response.gameOver = true;
+        }
 
+        // save game
+        this.forceSave(opponentPlayer, opponentPlayerIndex);
+
+
+        // if game over update users
+        if(opponentPlayer.getShipsLeft() <= 0) {
             // update looser user
             user.getModel().findOne({ _id: opponentPlayer.userId }).then((matchedUser) => {
                 matchedUser.played += 1;
@@ -252,8 +259,6 @@ gameSchema.methods.shoot = function(x, y) {
                 matchedUser.save();
             });
         }
-
-        this.forceSave(opponentPlayer, opponentPlayerIndex);
     }
 
     return response;

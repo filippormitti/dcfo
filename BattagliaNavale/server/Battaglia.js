@@ -243,7 +243,7 @@ app.get('/games/status/:status', auth, (req, res, next) => {
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
     });
 });
-app.post('/games', (req, res, next) => {
+app.post('/games', auth, (req, res, next) => {
     var g = game.newGame(req.body.user1Id);
     g.save().then((data) => {
         ios.emit('broadcast', data);
@@ -254,7 +254,7 @@ app.post('/games', (req, res, next) => {
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason.errmsg });
     });
 });
-app.post('/games/join', /*auth,*/ (req, res, next) => {
+app.post('/games/join', auth, (req, res, next) => {
     console.log('post /games/join - reqBody=' + JSON.stringify(req.body));
     game.getModel().findOne({ _id: req.body.id }).then((matchedGame) => {
         ios.emit('broadcast', matchedGame);
@@ -265,7 +265,7 @@ app.post('/games/join', /*auth,*/ (req, res, next) => {
     });
 });
 // url example: 'http://localhost:8080/games/turn/5c36861ba1357722467f5a59/0123'
-app.get('/games/:id/turn/:userId', /*auth,*/ (req, res, next) => {
+app.get('/games/:id/turn/:userId', auth, (req, res, next) => {
     console.log('get /games/:id/turn/:userId - reqParams=' + JSON.stringify(req.params));
     game.getModel().findOne({ _id: req.params.id }).then((matchedGame) => {
         var turn = matchedGame.isMyTurn(req.params.userId);
@@ -274,7 +274,7 @@ app.get('/games/:id/turn/:userId', /*auth,*/ (req, res, next) => {
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
     });
 });
-app.post('/games/shot', /*auth,*/ (req, res, next) => {
+app.post('/games/shot', auth, (req, res, next) => {
     console.log('post /games/shot - reqBody=' + JSON.stringify(req.body));
     game.getModel().findOne({ _id: req.body.id }).then((matchedGame) => {
         ios.emit('broadcast', matchedGame);
@@ -286,7 +286,7 @@ app.post('/games/shot', /*auth,*/ (req, res, next) => {
 });
 //***************************** games/battlefields *******************************
 // url example: 'http://localhost:8080/games/5c36861ba1357722467f5a59/battlefields/0123'
-app.get('/games/:id/battlefields/:userId', /*auth,*/ (req, res, next) => {
+app.get('/games/:id/battlefields/:userId', auth, (req, res, next) => {
     console.log('get /games/:id/battlefields/:userId - reqParams=' + JSON.stringify(req.params));
     game.getModel().findOne({ _id: req.params.id }).then((matchedGame) => {
         var grids = matchedGame.getGrids(req.params.userId);
@@ -296,7 +296,7 @@ app.get('/games/:id/battlefields/:userId', /*auth,*/ (req, res, next) => {
     });
 });
 //***************************** ships *******************************
-app.post('/ships', /*auth,*/ (req, res, next) => {
+app.post('/ships', auth, (req, res, next) => {
     console.log('post /ships - reqBody=' + JSON.stringify(req.body));
     game.getModel().findOne({ _id: req.body.gameId }).then((matchedGame) => {
         ios.emit('broadcast', matchedGame);
