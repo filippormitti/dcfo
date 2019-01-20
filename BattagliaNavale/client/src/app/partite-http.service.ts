@@ -62,8 +62,8 @@ export class PartiteHttpService {
                 catchError( this.handleError )
       );
   }
-  get_grid(id:string): Observable<object[]> {
-    return this.http.get<object[]>( this.us.url + '/games/'+id+'/battlefields', this.create_options({limit: '10', skip: '0'}   )).pipe(
+  get_grid(id:string, userId:string): Observable<object[]> {
+    return this.http.get<object[]>( this.us.url + '/games/'+id+'/battlefields/'+userId, this.create_options({limit: '10', skip: '0'}   )).pipe(
                catchError( this.handleError )
      );
  }
