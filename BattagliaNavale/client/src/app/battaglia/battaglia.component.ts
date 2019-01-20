@@ -35,14 +35,8 @@ portaindex=8;
 myindex: number;
 turno:boolean;
 setnave=true;
-myGrid
-opponentGrid
-
-
-
-
-
-
+myGrid;
+opponentGrid;
 
   constructor(private route: ActivatedRoute, private sio: SocketioService , private gm:PartiteService, private us: UserService, private router: Router ) {
   this.MyShip.horizontal=true;
@@ -70,12 +64,12 @@ opponentGrid
     
    
     }
-
+//funzione per ottenere il gioco
   public get_game() {
     this.gm.get_gameid(this.gameid).subscribe(
    ( games ) => {
      this.partita = games;
-      console.log('assegno partita');
+  //    console.log('assegno partita');
       this.get_turn();
       this.get_grid();
      this.loaded=true;
@@ -94,6 +88,7 @@ opponentGrid
  );
 }
 
+//funzione per ottenere i campi di gioco 
 public get_grid() {
   this.gm.get_grid(this.gameid).subscribe(
  ( grids) => {
@@ -109,12 +104,8 @@ public get_grid() {
   this.opponentGrid=grids.player1;
      console.log('Opponent vale '+JSON.stringify(this.opponentGrid));
   }
-
     console.log('assegno partita');
-    
  } , (err) => {
-
-
    // Try to renew the token
    this.us.renew().subscribe( () => {
      // Succeeded
@@ -126,18 +117,13 @@ public get_grid() {
  }
 );
 }
-public ruota(ship:Ship){
-  if (ship.horizontal)
-  ship.horizontal=false;
-  ship.horizontal=true;
-}
+//funzione per ottenere il turno
 public get_turn(){  
   if (this.partita.gameStatus==0){
     console.log('entro in stato 0');
     return;
   }
  
-
   this.gm.get_turn(this.gameid,this.us.get_id()).subscribe(
     ( turno ) => {
 console.log('id opponent è = '+ this.findOpponent(this.us.get_id()))
@@ -158,6 +144,7 @@ console.log('il mio id è = '+ this.us.get_id())
     }
   );
  }
+ //funzione  per verificare  la posizione dell'avversario nell'array player
 public findOpponent(id:string){
   var user = JSON.parse(this.partita.players[0]);
   if(id!=user.userId)
@@ -165,6 +152,7 @@ public findOpponent(id:string){
   else return 1
 }
 
+//funzione per impostare la nave da passare
  public setShip(selected:Ship,horizontal:boolean){
   this.setnave=true;
   Object.assign(this.MyShip, selected);
@@ -193,6 +181,7 @@ public findOpponent(id:string){
     console.log('ho settato la nave: ' + JSON.stringify(this.MyShip) );
 }
   
+//funzione per posizionare la nave
   public post_ship(col: number, row:number, gameid:string,gridIndex:number,horizontal:boolean){
     if (this.MyShip.size==0){
       this.setnave=false;
@@ -231,7 +220,7 @@ public findOpponent(id:string){
            
    
     }
-
+//funzione per fare il colpo
     public fire(x: number,y: number, gameid:string){
      
       var txt  = ' { "id" :"' +gameid+'",'
@@ -284,10 +273,17 @@ public findOpponent(id:string){
  }
  opponentIsHit(col: number, row:number){
   var index= row*10+col
-if(this.opponentGrid[index].shot==2)
-return true;
-if(this.opponentGrid[index].shot==1)
-return false;
+  return this.opponentGrid[index].shot
+}
+
+//verifica se sei il vincitore
+iswin(){
+  if (this.partita.winningPlayer==null)
+  return
+  if (this.partita.winningPlayer==this.findOpponent(this.us.get_id()))
+  return false
+  return true
+
 }
       
   logout() {

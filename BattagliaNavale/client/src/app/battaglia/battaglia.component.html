@@ -2,7 +2,12 @@
 <body *ngIf="loaded">
       <a > Partita :{{gameid}}</a>
       <div *ngIf='partita.gameStatus== 0'> Attesa secondo giocatore</div>
-      <div *ngIf='partita.gameStatus== 4'> Partita finita</div>
+      <div *ngIf='partita.gameStatus== 4 && iswin()'> Partita finita hai vinto
+        <li><a routerLink="/menu">Torna al menu</a></li>
+      </div>
+      <div *ngIf='(partita.gameStatus== 4)&&(!iswin())'> Partita finita hai perso
+          <li><a routerLink="/menu">Torna al menu</a></li>
+      </div>
       <div *ngIf='(partita.gameStatus== 2)||(partita.gameStatus== 1)||(partita.gameStatus== 3)'>
        <h1  *ngIf='!(turno)'> Non è il tuo turno attendi avversario..</h1>
     <div *ngIf='turno'>
@@ -13,7 +18,7 @@
               </div>
         <table>
             <tr *ngFor="let row of OpponentBoard.matrix">
-                <td (click)="fire(col.x, col.y,gameid)" *ngFor="let col of row" [ngClass]="{'miss': (opponentIsHit(col.y,col.x)==1), 'hit': (opponentIsHit(col.y,col.x)==2),'sunk':(opponentIsHit(col.y,col.x)==2)&& opponentSunk(col.y,col.x) }"></td>
+                <td (click)="fire(col.y, col.x,gameid)" *ngFor="let col of row" [ngClass]="{'miss': (opponentIsHit(col.y,col.x)==1), 'hit': (opponentIsHit(col.y,col.x)==2),'sunk':(opponentIsHit(col.y,col.x)==2)&& opponentSunk(col.y,col.x) }"></td>
             </tr>
           </table>
         </div>
