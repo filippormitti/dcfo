@@ -349,7 +349,7 @@ app.post('/games/join', /*auth,*/ (req,res,next) => {
 
 // url example: 'http://localhost:8080/games/turn/5c36861ba1357722467f5a59/0123'
 app.get('/games/:id/turn/:userId', /*auth,*/ (req, res, next) => {
-    console.log('get /games/:id/turn/:userId - reqParams='+JSON.stringify(req.params));
+    // console.log('get /games/:id/turn/:userId - reqParams='+JSON.stringify(req.params));
 
     game.getModel().findOne({ _id: req.params.id }).then((matchedGame) => {
     //    ios.emit('broadcast', matchedGame );
@@ -376,12 +376,12 @@ app.post('/games/shot', /*auth,*/ (req,res,next) => {
 
 //***************************** games/battlefields *******************************
 // url example: 'http://localhost:8080/games/5c36861ba1357722467f5a59/battlefields/0123'
-app.get('/games/:id/battlefields', /*auth,*/ (req, res, next) => {
-    console.log('get /games/:id/battlefields - reqParams='+JSON.stringify(req.params));
+app.get('/games/:id/battlefields/:userId', /*auth,*/ (req, res, next) => {
+    console.log('get /games/:id/battlefields/:userId - reqParams='+JSON.stringify(req.params));
 
     game.getModel().findOne({ _id: req.params.id }).then((matchedGame) => {
         // ios.emit('broadcast', matchedGame);
-        var grids = matchedGame.getGrids();
+        var grids = matchedGame.getGrids(req.params.userId);
 
         return res.status(200).json(grids);
     }).catch((reason) => {

@@ -89,34 +89,61 @@ opponentGrid;
 }
 
 //funzione per ottenere i campi di gioco 
-public get_grid() {
-  this.gm.get_grid(this.gameid).subscribe(
- ( grids) => {
-   if((this.findOpponent(this.us.get_id()))==0){
-     this.myGrid = grids.player1;
-     console.log('MYgrids vale '+JSON.stringify(this.myGrid));
-   this.opponentGrid=grids.player0;
-      console.log('Opponent vale '+JSON.stringify(this.opponentGrid));
-   }
-   else{
-    this.myGrid = grids.player0;
-    console.log('MYgrids vale '+JSON.stringify(this.myGrid));
-  this.opponentGrid=grids.player1;
-     console.log('Opponent vale '+JSON.stringify(this.opponentGrid));
-  }
-    console.log('assegno partita');
- } , (err) => {
-   // Try to renew the token
-   this.us.renew().subscribe( () => {
-     // Succeeded
-     this.get_game();
-   }, (err2) => {
-     // Error again, we really need to logout
-    // this.logout();
-   } );
- }
-);
-}
+// public get_grid() {
+//   this.gm.get_grid(this.gameid).subscribe(
+//  ( grids) => {
+//    if((this.findOpponent(this.us.get_id()))==0){
+//      this.myGrid = grids.player1;
+//      console.log('MYgrids vale '+JSON.stringify(this.myGrid));
+//    this.opponentGrid=grids.player0;
+//       console.log('Opponent vale '+JSON.stringify(this.opponentGrid));
+//    }
+//    else{
+//     this.myGrid = grids.player0;
+//     console.log('MYgrids vale '+JSON.stringify(this.myGrid));
+//   this.opponentGrid=grids.player1;
+//      console.log('Opponent vale '+JSON.stringify(this.opponentGrid));
+//   }
+//     console.log('assegno partita');
+//  } , (err) => {
+//    // Try to renew the token
+//    this.us.renew().subscribe( () => {
+//      // Succeeded
+//      this.get_game();
+//    }, (err2) => {
+//      // Error again, we really need to logout
+//     // this.logout();
+//    } );
+//  }
+// );
+// }
+    public get_grid() {
+        this.gm.get_grid(this.gameid, this.us.get_id()).subscribe(
+            ( grids) => {
+                // console.log('*********************************************************************** this.us.get_id()');
+                // console.log('****************** grids=' + JSON.stringify(grids));
+                // console.log('****************** this.us.get_id()=' + this.us.get_id());
+                // console.log('****************** grids[this.us.get_id()].myGrid=' + JSON.stringify(grids[this.us.get_id()].myGrid));
+                // console.log('****************** grids[this.us.get_id()].myGrid=' + JSON.stringify(grids[this.us.get_id()].opponentGrid));
+                this.myGrid = grids.myGrid;
+                this.opponentGrid = grids.opponentGrid;
+
+                console.log('assegno partita');
+            } , (err) => {
+                // Try to renew the token
+                this.us.renew().subscribe( () => {
+                    // Succeeded
+                    this.get_game();
+                }, (err2) => {
+                    // Error again, we really need to logout
+                    // this.logout();
+                } );
+            }
+        );
+    }
+
+
+
 //funzione per ottenere il turno
 public get_turn(){  
   if (this.partita.gameStatus==0){

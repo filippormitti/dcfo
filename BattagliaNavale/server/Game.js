@@ -118,9 +118,9 @@ gameSchema.methods.getWinnerId = function () {
     return player.userId;
 };
 gameSchema.methods.isMyTurn = function (userId) {
-    console.log('gameSchema.methods.placeShip - userId=' + userId);
+    // console.log('gameSchema.methods.placeShip - userId='+userId);
     var currentPlayer = this.getPlayerFromIndex(this.currentPlayer);
-    console.log("gameSchema.methods.placeShip - currentPlayer.userId=" + currentPlayer.userId);
+    // console.log("gameSchema.methods.placeShip - currentPlayer.userId="+currentPlayer.userId);
     if (currentPlayer.userId == userId) {
         return true;
     }
@@ -211,21 +211,26 @@ gameSchema.methods.getGameState = function (playerIndex, gridOwner) {
  * @param {type} hideShips Hide unsunk ships
  * @returns {BattleshipGame.prototype.getGridState.battleshipGameAnonym$0}
  */
-gameSchema.methods.getGrids = function () {
+gameSchema.methods.getGrids = function (userId) {
     var response = {};
     var self = this;
+    var players = [];
     this.players.forEach(function (playerString, index) {
-        // console.log('gameSchema.methods.getGrid - playerString='+playerString+', index='+index);
         var player = self.getPlayerFromIndex(index);
-        // console.log('gameSchema.methods.getGrid - player='+player.userId);
-        // if (player.userId === userId){
-        //     matchedPlayer = player;
-        //     // console.log('gameSchema.methods.getGrid - matchedPlayer='+matchedPlayer.userId);
-        // }
-        console.log('gameSchema.methods.getGrid - player.shots=' + JSON.stringify(player.shots));
-        response['player' + index] = player.getSmartGrid();
-        // console.log('gameSchema.methods.getGrid - grids='+JSON.stringify(response[player.userId]));
+        players.push(player);
+        // console.log('gameSchema.methods.getGrid - player.shots='+JSON.stringify(player.shots));
     });
+    for (var i = 0; i < players.length; i++) {
+        if (players[i] != null && players[i] != undefined
+            && players[i].userId == userId) {
+            var opponentPlayerIndex = (i === 0) ? 1 : 0;
+            response = {
+                myGrid: players[i].getSmartGrid(),
+                opponentGrid: players[opponentPlayerIndex].getSmartGrid()
+            };
+        }
+    }
+    console.log('gameSchema.methods.getGrid - response=' + JSON.stringify(response));
     return response;
 };
 //*************************************************************** TODO credo si possa rimuovere

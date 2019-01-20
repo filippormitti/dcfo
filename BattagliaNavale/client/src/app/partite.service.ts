@@ -23,7 +23,7 @@ export class PartiteService {
   get_gameid(id:string ): Observable<any> {
     return of( this.partite );
   }
-  get_grid(id:string ): Observable<any> {
+  get_grid(id:string, userId:string ): Observable<any> {
     return of( this.partite );
   }
   get_turn( game:string,id:string ): Observable<boolean> {
