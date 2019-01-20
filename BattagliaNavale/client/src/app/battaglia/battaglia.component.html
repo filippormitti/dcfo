@@ -2,10 +2,12 @@
 <body *ngIf="loaded">
       <a > Partita :{{gameid}}</a>
       <div *ngIf='partita.gameStatus== 0'> Attesa secondo giocatore</div>
-      <div *ngIf='partita.gameStatus== 4 && iswin()'> Partita finita hai vinto
+      <div *ngIf='partita.gameStatus== 4 && iswin()'> 
+          <h1>Partita finita hai vinto</h1>
         <li><a routerLink="/menu">Torna al menu</a></li>
       </div>
-      <div *ngIf='(partita.gameStatus== 4)&&(!iswin())'> Partita finita hai perso
+      <div *ngIf='(partita.gameStatus== 4)&&(!iswin())'>
+          <h1> Partita finita hai perso</h1>
           <li><a routerLink="/menu">Torna al menu</a></li>
       </div>
       <div *ngIf='(partita.gameStatus== 2)||(partita.gameStatus== 1)||(partita.gameStatus== 3)'>
