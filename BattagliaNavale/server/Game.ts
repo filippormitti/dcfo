@@ -1,6 +1,6 @@
 import mongoose = require('mongoose');
-import {Player} from "../client/src/app/Player";
-// import * as Player from './Player';
+// import {Player} from "../client/src/app/Player";
+import * as Player from './Player';
 // import Player from './Player.js';
 
 export interface Game extends mongoose.Document {
@@ -100,25 +100,23 @@ gameSchema.methods.join = function (userId) {
 };
 
 gameSchema.methods.placeShip = function (x, y, horizontal, shipIndex) {
-    console.log('gameSchema.methods.placeShip - start');
-
     // convert Player from string to object
     var player = this.getPlayerFromIndex(this.currentPlayer);
 
     var response = player.placeShip(x, y, horizontal, shipIndex);
 
-    console.log('player.ships= '+JSON.stringify(player.ships));
-    console.log('player.ships= '+this.currentPlayer);
+    console.log('gameSchema.methods.placeShip - player.ships= '+JSON.stringify(player.ships));
+    console.log('gameSchema.methods.placeShip - this.currentPlayer= '+this.currentPlayer);
+    console.log('gameSchema.methods.placeShip - response= '+JSON.stringify(response));
 
-    if (response.all){
+    if (response.placemCompleted){
         this.switchPlayer();
         this.gameStatus = (this.gameStatus === GameStatus.ply1ShipsPlacement) ? GameStatus.ply2ShipsPlacement : GameStatus.inProgress;
     }
 
+    console.log('gameSchema.methods.placeShip - before forceSave');
     this.forceSave(player, this.currentPlayer);
-
-    console.log('player.ships= '+this.currentPlayer);
-    console.log('gameSchema.methods.placeShip - end');
+    console.log('gameSchema.methods.placeShip - after forceSave');
 
     return response.placed;
 };
@@ -292,9 +290,9 @@ gameSchema.methods.getGrids = function() {
         //     matchedPlayer = player;
         //     // console.log('gameSchema.methods.getGrid - matchedPlayer='+matchedPlayer.userId);
         // }
-        console.log('gameSchema.methods.getGrid - player.shots='+JSON.stringify(player.shots));
+        // console.log('gameSchema.methods.getGrid - player.shots='+JSON.stringify(player.shots));
         response['player'+index] = player.getSmartGrid();
-        console.log('gameSchema.methods.getGrid - grids='+JSON.stringify(response[player.userId]));
+        // console.log('gameSchema.methods.getGrid - grids='+JSON.stringify(response[player.userId]));
     });
 
     return response;

@@ -109,7 +109,7 @@ Player.prototype.getShipsLeft = function() {
  * @returns {Boolean}
  */
 Player.prototype.placeShip = function(x, y, horizontal, shipIndex) {
-    console.log('Player.prototype.placeShip - start');
+    // console.log('Player.prototype.placeShip - start');
 
     // create ship
     var ship = new Ship(Settings.ships[shipIndex]);
@@ -119,7 +119,7 @@ Player.prototype.placeShip = function(x, y, horizontal, shipIndex) {
 
     // save ship
     this.ships[shipIndex]=(ship);
-    console.log('this.ships= '+JSON.stringify(this.ships));
+    // console.log('this.ships= '+JSON.stringify(this.ships));
 
     // place ship in shipGrid
     var placed = false;
@@ -134,7 +134,7 @@ Player.prototype.placeShip = function(x, y, horizontal, shipIndex) {
         }
         // save ship
         this.ships[shipIndex] = ship;
-        console.log('this.ships= '+JSON.stringify(this.ships));
+        // console.log('this.ships= '+JSON.stringify(this.ships));
 
         placed = true;
     }
@@ -142,24 +142,26 @@ Player.prototype.placeShip = function(x, y, horizontal, shipIndex) {
     // check if all ships has been placed
     var response = {
         placed: placed,
-        all: this.areShipsPlaced(),
+        placemCompleted: this.isPlacemCompleted(),
     };
 
-    console.log('this.ships.length='+this.ships.length);
-    console.log('Settings.ships.length='+Settings.ships.length);
-    console.log('response='+JSON.stringify(response));
+    // console.log('this.ships.length='+this.ships.length);
+    // console.log('Settings.ships.length='+Settings.ships.length);
+    // console.log('response='+JSON.stringify(response));
 
     return response;
 };
 
-Player.prototype.areShipsPlaced = function() {
-    var allPlaced = true;
+Player.prototype.isPlacemCompleted = function() {
+    var placemCompleted = true;
 
     for (var i=0; i < Settings.ships.length; i++){
         if (this.ships[i] == undefined || this.ships[i] == null){
-            allPlaced = false;
+            placemCompleted = false;
         }
     }
+
+    return placemCompleted;
 };
 
 /**

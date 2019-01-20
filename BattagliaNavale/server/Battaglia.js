@@ -301,7 +301,7 @@ app.post('/games/shot', /*auth,*/ (req, res, next) => {
 //***************************** games/battlefields *******************************
 // url example: 'http://localhost:8080/games/5c36861ba1357722467f5a59/battlefields/0123'
 app.get('/games/:id/battlefields', /*auth,*/ (req, res, next) => {
-    console.log('get /games/:id/battlefields - reqParams=' + JSON.stringify(req.params));
+    // console.log('get /games/:id/battlefields - reqParams='+JSON.stringify(req.params));
     game.getModel().findOne({ _id: req.params.id }).then((matchedGame) => {
         // ios.emit('broadcast', matchedGame);
         // var hideShips = (req.params.hideShips === 'true') ? true : false;
@@ -352,13 +352,6 @@ app.post('/ships', /*auth,*/ (req, res, next) => {
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
     });
 });
-//
-// //verifica stato campo avversario
-// post statoopponent(x,y) return 2 colpita,1miss,0 non init (questo nel progetto è This.shots[gridindex])
-// //verifica stato mio campo
-// post statomyboard(x,y) return -1 vuoto number pieno  (questo nel progetto è This.shipGrid[gridindex])
-// // per sapere quali navi ho affondato
-// get SunkShips() return Array[Ship]
 //***************************** auth *******************************
 // Configure HTTP basic authentication strategy 
 // trough passport middleware.
