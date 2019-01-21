@@ -1,7 +1,5 @@
 import { Game } from './Game';
-
 import { Injectable } from '@angular/core';
-import jwtdecode = require('jwt-decode');
 import { of } from 'rxjs/observable/of';
 import { Observable } from 'rxjs/Observable';
 

@@ -1,6 +1,7 @@
 import { User } from './User';
 import { Injectable } from '@angular/core';
-import jwtdecode = require('jwt-decode');
+//import jwtdecode = require('jwt-decode');
+import * as jwtdecode from 'jwt-decode';
 import { of } from 'rxjs/observable/of';
 import { Observable } from 'rxjs/Observable';
 

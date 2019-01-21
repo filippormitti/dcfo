@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { UserService } from './user.service';
-import io = require('socket.io-client');
+//import io = require('socket.io-client');
+import * as io from 'socket.io-client';
 
 @Injectable()
 export class SocketioService {
