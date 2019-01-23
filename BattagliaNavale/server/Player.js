@@ -87,7 +87,12 @@ Player.prototype.placeShip = function(x, y, horizontal, shipIndex) {
     // place ship in shipGrid
     var placed = false;
     var i;
-    if(!this.checkShipOverlap(ship) && !this.checkShipAdjacent(ship)) {
+
+    // validate position
+    var insideGrid = horizontal
+        ? ((ship.x + ship.size) <= Settings.gridCols)
+        : ((ship.y + ship.size) <= Settings.gridCols);
+    if(insideGrid && !this.checkShipOverlap(ship) && !this.checkShipAdjacent(ship)) {
         // success - ship does not overlap or is adjacent to other ships
         // place ship array-index in shipGrid
         var gridIndex = ship.y * Settings.gridCols + ship.x;

@@ -284,7 +284,6 @@ app.post('/games/shot', auth, (req, res, next) => {
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
     });
 });
-//***************************** games/battlefields *******************************
 // url example: 'http://localhost:8080/games/5c36861ba1357722467f5a59/battlefields/0123'
 app.get('/games/:id/battlefields/:userId', auth, (req, res, next) => {
     console.log('get /games/:id/battlefields/:userId - reqParams=' + JSON.stringify(req.params));
@@ -295,9 +294,8 @@ app.get('/games/:id/battlefields/:userId', auth, (req, res, next) => {
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
     });
 });
-//***************************** ships *******************************
-app.post('/ships', auth, (req, res, next) => {
-    console.log('post /ships - reqBody=' + JSON.stringify(req.body));
+app.post('/games/ships', auth, (req, res, next) => {
+    console.log('post /games/ships - reqBody=' + JSON.stringify(req.body));
     game.getModel().findOne({ _id: req.body.gameId }).then((matchedGame) => {
         ios.emit('broadcast', matchedGame);
         var result = matchedGame.placeShip(req.body.x, req.body.y, req.body.horizontal, req.body.shipIndex);

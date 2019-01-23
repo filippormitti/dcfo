@@ -80,7 +80,7 @@ export class PartiteHttpService {
     );
   }
   post_ship( dati: object): Observable<boolean> {
-    return this.http.post<boolean>( this.us.url + '/ships', dati, this.create_options() ).pipe(
+    return this.http.post<boolean>( this.us.url + '/games/ships', dati, this.create_options() ).pipe(
    catchError(this.handleError)
  );
 }

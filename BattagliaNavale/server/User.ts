@@ -54,7 +54,7 @@ var userSchema = new mongoose.Schema( {
         type: mongoose.SchemaTypes.Number,
         required: false
     }
-})
+});
 
 // Here we add some methods to the user Schema
 
@@ -74,7 +74,7 @@ userSchema.methods.setPassword = function( pwd:string ) {
     var hmac = crypto.createHmac('sha512', this.salt );
     hmac.update( pwd );
     this.digest = hmac.digest('hex'); // The final digest depends both by the password and the salt
-}
+};
 
 userSchema.methods.validatePassword = function( pwd:string ):boolean {
 
@@ -86,7 +86,7 @@ userSchema.methods.validatePassword = function( pwd:string ):boolean {
     hmac.update(pwd);
     var digest = hmac.digest('hex');
     return (this.digest === digest);
-}
+};
 
 userSchema.methods.hasAdminRole = function(): boolean {
     for( var roleidx in this.roles ) {
@@ -94,11 +94,11 @@ userSchema.methods.hasAdminRole = function(): boolean {
             return true;
     }
     return false;
-}
+};
 
 userSchema.methods.setAdmin = function() {
     this.roles.push( "ADMIN" );
-}
+};
 
 userSchema.methods.hasPlayerRole = function(): boolean {
     for( var roleidx in this.roles ) {
@@ -106,11 +106,11 @@ userSchema.methods.hasPlayerRole = function(): boolean {
             return true;
     }
     return false;
-}
+};
 
 userSchema.methods.setPlayer = function() {
     this.roles.push( "PLAYER" );
-}
+};
 
 
 
