@@ -9,7 +9,7 @@
 
 <div *ngFor="let user of users" class="card" style="margin: 5px" > 
     <div >
-        <h5 >&nbsp;<a routerLink="/menu">{{user.username}}</a></h5>    
+        <h5 >&nbsp;{{user.username}}</h5>    
         <div *ngIf="us.is_admin()" class="btn-delete" >
         <button class="btn-delete" (click)="delete_user(user._id)">Delete</button>  
       </div>  
@@ -25,7 +25,7 @@
           {{us.get_username()}}
         </button>
         <div class="dropdown-menu">
-          <div class="dropdown-item" href="#">{{us.get_mail()}}</div>
+          <div class="dropdown-item" >{{us.get_mail()}}</div>
           <div *ngIf="us.is_admin()" class="dropdown-item" href="#"><i class="fas fa-check"></i> Admin role</div>
           <div *ngIf="us.is_player()" class="dropdown-item" href="#"><i class="fas fa-check"></i> Palyer role</div>
           <div class="dropdown-divider"></div>

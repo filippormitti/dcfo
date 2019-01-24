@@ -173,7 +173,7 @@ app.delete('/messages/:id', auth, (req, res, next) => {
 });
 //***************************** users *******************************
 app.get('/users', auth, (req, res, next) => {
-    user.getModel().find({}, { digest: 0, salt: 0 }).sort({ win: -1 }).then((users) => {
+    user.getModel().find({}, { digest: 0, salt: 0 }).sort({ won: -1 }).then((users) => {
         return res.status(200).json(users);
     }).catch((reason) => {
         return next({ statusCode: 404, error: true, errormessage: "DB error: " + reason });
