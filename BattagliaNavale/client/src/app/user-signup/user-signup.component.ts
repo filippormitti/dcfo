@@ -23,7 +23,7 @@ export class UserSignupComponent implements OnInit {
       this.errmessage = undefined;
       this.router.navigate(['/login']);
     }, (err) => {
-      console.log('Signup error: ' + JSON.stringify(err.error.errormessage) );
+     console.log('Signup error: ' + JSON.stringify(err.error.errormessage) );
       this.errmessage = err.error.errormessage || err.error.message;
 
     });

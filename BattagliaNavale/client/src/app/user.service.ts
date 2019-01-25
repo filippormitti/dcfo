@@ -15,7 +15,7 @@ export class UserService {
   public url = '';
 
   login( mail: string, password: string, remember: boolean ): Observable<any> {
-    console.log('Login: ' + mail + ' ' + password );
+   // console.log('Login: ' + mail + ' ' + password );
 
     // tslint:disable-next-line:max-line-length
     this.token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwicm9sZXMiOlsiQURNSU4iLCJNT0RFUkFUT1IiXSwibWFpbCI6ImFkbWluQHBvc3RtZXNzYWdlcy5pdCIsImlkIjoiNWFjNGRkYzcxMWUwMzYwYmEyZGYzZjQ4IiwiaWF0IjoxNTIyODU2MjU3LCJleHAiOjE1MjI4NTk4NTd9.3p6TmJAMqL19h4-b_r2pBdyerdbHh_l3zA87ZTfqeYk';

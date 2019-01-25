@@ -27,7 +27,7 @@ export class SocketioService {
       });
 
       this.socket.on('error', (err) => {
-        console.log('Socket.io error: ' + err );
+      console.log('Socket.io error: ' + err );
         observer.error( err );
       });
 
