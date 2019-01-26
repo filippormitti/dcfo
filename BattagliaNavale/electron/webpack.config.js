@@ -403,11 +403,11 @@ module.exports = {
       "sourceMap": true,
       "filename": "scripts.bundle.js",
       "scripts": [
-        "F:\\Scuola\\Progetto\\BattagliaNavale\\electron\\client\\node_modules\\jquery\\dist\\jquery.min.js",
-        "F:\\Scuola\\Progetto\\BattagliaNavale\\electron\\client\\node_modules\\popper.js\\dist\\umd\\popper.min.js",
-        "F:\\Scuola\\Progetto\\BattagliaNavale\\electron\\client\\node_modules\\bootstrap\\dist\\js\\bootstrap.min.js"
+        "F:\\progettotaw\\BattagliaNavale\\electron\\node_modules\\jquery\\dist\\jquery.min.js",
+        "F:\\progettotaw\\BattagliaNavale\\electron\\node_modules\\popper.js\\dist\\umd\\popper.min.js",
+        "F:\\progettotaw\\BattagliaNavale\\electron\\node_modules\\bootstrap\\dist\\js\\bootstrap.min.js"
       ],
-      "basePath": "F:\\Scuola\\Progetto\\BattagliaNavale\\electron\\client"
+      "basePath": "F:\\progettotaw\\BattagliaNavale\\electron"
     }),
     new CopyWebpackPlugin([
       {
