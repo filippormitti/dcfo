@@ -20,7 +20,7 @@ export class UserHttpService {
 
   login( mail: string, password: string, remember: boolean ): Observable<any> {
 
-    console.log('Login: ' + mail + ' ' + password );
+   // console.log('Login: ' + mail + ' ' + password );
     const options = {
       headers: new HttpHeaders({
         authorization: 'Basic ' + btoa( mail + ':' + password),

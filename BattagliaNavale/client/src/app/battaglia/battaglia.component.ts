@@ -35,8 +35,8 @@ portaindex=8;
 myindex: number;
 turno:boolean;
 setnave=true;
-myGrid;
-opponentGrid;
+myGrid=null;
+opponentGrid=null;
 
   constructor(private route: ActivatedRoute, private sio: SocketioService , private gm:PartiteService, private us: UserService, private router: Router ) {
   this.MyShip.horizontal=true;
@@ -91,11 +91,13 @@ opponentGrid;
 //funzione per ottenere i campi di gioco 
 public get_grid()
 {
+  if(this.partita.players.length<1)
+  return;
     this.gm.get_grid(this.gameid, this.us.get_id()).subscribe(( grids) => {
             this.myGrid = grids.myGrid;
             this.opponentGrid = grids.opponentGrid;
 
-            console.log('assegno partita');
+            //console.log('assegno partita');
         } , (err) => {
             // Try to renew the token
             this.us.renew().subscribe( () => {
@@ -114,16 +116,16 @@ public get_grid()
 //funzione per ottenere il turno
 public get_turn(){  
   if (this.partita.gameStatus==0){
-    console.log('entro in stato 0');
+   // console.log('entro in stato 0');
     return;
   }
  
   this.gm.get_turn(this.gameid,this.us.get_id()).subscribe(
     ( turno ) => {
-console.log('Verificato opponent vale = '+ this.findOpponent(this.us.get_id()))
-console.log('il mio id è = '+ this.us.get_id())
+//console.log('Verificato opponent vale = '+ this.findOpponent(this.us.get_id()))
+//console.log('il mio id è = '+ this.us.get_id())
       this.turno = turno;
-      console.log('inizializzazione turno');
+      //console.log('verifica turno eseguita');
          } , (err) => {
  
       // Try to renew the token
@@ -189,7 +191,7 @@ public findOpponent(id:string){
       var dati = JSON.parse(txt);
             this.gm.post_ship(dati).subscribe( (esito) => {
               if(esito){
-                console.log('il valore di esito è ' +esito);
+             // console.log('il valore di esito è ' +esito);
               if((0<=gridIndex)&&(gridIndex<=3))
               this.cacciaindex=this.cacciaindex -1;
               if((4<=gridIndex)&&(gridIndex<=5))
@@ -200,7 +202,7 @@ public findOpponent(id:string){
               this.portaindex=this.portaindex-1;
               this.MyShip.size=0;
               this.setnave=true;
-                     console.log('nave postata' +txt);
+              console.log('nave postata' +txt);
               }
               else  {
                 this.setnave=false;
@@ -240,18 +242,24 @@ public findOpponent(id:string){
   
   hasBoat(col: number, row:number){
      var index= row*10+col
+     if(this.myGrid==null)
+     return;
    if(this.myGrid[index].ship!=-1)
     return true;
    return false;
   }
   myGridisSunk(col: number, row:number){
     var index= row*10+col
+    if(this.myGrid==null)
+     return;
   if((this.myGrid[index].sunk!=null) && (this.myGrid[index].sunk!!= undefined))
    return this.myGrid[index].sunk;
   return false;
   }
   opponentSunk(col: number, row:number){
     var index= row*10+col
+    if(this.opponentGrid==null)
+     return;
   if((this.opponentGrid[index].sunk!=null) && (this.opponentGrid[index].sunk!!= undefined))
    return this.opponentGrid[index].sunk;
   return false;
@@ -259,11 +267,15 @@ public findOpponent(id:string){
 
   myGridIsHit(col: number, row:number){
     var index= row*10+col
+    if(this.myGrid==null)
+     return;
   return this.myGrid[index].shot
   
  }
  opponentIsHit(col: number, row:number){
   var index= row*10+col
+  if(this.opponentGrid==null)
+     return;
   return this.opponentGrid[index].shot
 }
 

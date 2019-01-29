@@ -120,10 +120,10 @@ public get_turn(){
  
   this.gm.get_turn(this.gameid,this.us.get_id()).subscribe(
     ( turno ) => {
-console.log('id opponent è = '+ this.findOpponent(this.us.get_id()))
+console.log('Verificato opponent vale = '+ this.findOpponent(this.us.get_id()))
 console.log('il mio id è = '+ this.us.get_id())
       this.turno = turno;
-      console.log('turno vale'+turno);
+      console.log('inizializzazione turno');
          } , (err) => {
  
       // Try to renew the token
@@ -154,32 +154,32 @@ public findOpponent(id:string){
 
     if(this.MyShip.size==2){
     this.myindex=this.cacciaindex;
-    console.log('myindex vale' +this.myindex);
-    console.log('cacciaindex vale' +this.cacciaindex);
+   // console.log('myindex vale' +this.myindex);
+    //console.log('cacciaindex vale' +this.cacciaindex);
   }
     if(this.MyShip.size==3){
     this.myindex=this.sottomarinoindex;
-    console.log('myindex vale' +this.myindex);
-    console.log('cacciaindex vale' +this.sottomarinoindex);
+   // console.log('myindex vale' +this.myindex);
+   // console.log('cacciaindex vale' +this.sottomarinoindex);
   }
     if(this.MyShip.size==4){
     this.myindex=this.carrozzataindex;
-    console.log('myindex vale' +this.myindex);
-    console.log('cacciaindex vale' +this.carrozzataindex);
+    //console.log('myindex vale' +this.myindex);
+   // console.log('cacciaindex vale' +this.carrozzataindex);
   }
     if(this.MyShip.size==5){
     this.myindex=this.portaindex;
-    console.log('myindex vale' +this.myindex);
-    console.log('cacciaindex vale' +this.portaindex);
+   // console.log('myindex vale' +this.myindex);
+    //console.log('cacciaindex vale' +this.portaindex);
   }
-    console.log('ho settato la nave: ' + JSON.stringify(this.MyShip) );
+    //console.log('ho settato la nave: ' + JSON.stringify(this.MyShip) );
 }
   
 //funzione per posizionare la nave
   public post_ship(col: number, row:number, gameid:string,gridIndex:number,horizontal:boolean){
     if (this.MyShip.size==0){
       this.setnave=false;
-      console.log('seleziona nave')
+      //console.log('seleziona nave')
       return; 
     }
     var txt  = ' { "gameId" :"' +gameid+'",'
@@ -204,7 +204,8 @@ public findOpponent(id:string){
               }
               else  {
                 this.setnave=false;
-                console.log('il valore di esito è ' +esito);}
+               // console.log('il valore di esito è ' +esito);
+              }
 
             }, (error) => {
               this.setnave=false;
@@ -230,11 +231,7 @@ public findOpponent(id:string){
      
       }
     
-  //  this.MyShip.x=row;
-  //  this.MyShip.y=col;
- //   for(var i: number = 0; i < this.MyShip.size; i++)
-  //  this.MyPartita.shipGrid[row][col+i]=1;
-  //  console.log('le coordinate: ' + JSON.stringify(this.MyShip) );
+
 
   
 

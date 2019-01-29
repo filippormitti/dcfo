@@ -42,14 +42,15 @@ export class UserListComponent implements OnInit {
   }
   public delete_user( id: number ) {
     this.us.delete_user(id).subscribe( (d) => {
-      console.log('utente cancellato: ' + JSON.stringify(d) );
+      //console.log('utente cancellato: ' + JSON.stringify(d) );
        this.errmessage = undefined;
        this.router.navigate(['/menu']);
     }, (err) => {
-      console.log('errore cancellazione: ' + JSON.stringify(err.error.errormessage) );
+     // console.log('errore cancellazione: ' + JSON.stringify(err.error.errormessage) );
       this.errmessage = err.error.errormessage;
 
     });
+
 
   }
 

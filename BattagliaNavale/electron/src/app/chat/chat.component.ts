@@ -54,7 +54,7 @@ this.chat = { tags: [], content: '', timestamp: new Date(), authormail: '',recei
     this.chat.timestamp = new Date();
     this.chat.authormail= this.us.get_mail();
     this.ms.post_message( this.chat ).subscribe( (m) => {
-      console.log('chatposted');
+     // console.log('chatposted');
       this.set_empty();
      
 
