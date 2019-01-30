@@ -337,6 +337,8 @@ var BattagliaComponent = /** @class */ (function () {
         this.carrozzataindex = 7;
         this.portaindex = 8;
         this.setnave = true;
+        this.myGrid = null;
+        this.opponentGrid = null;
         this.MyShip.horizontal = true;
         this.MyShip.size = 0;
         this.Cacciatorpediniere.size = 2;
@@ -361,7 +363,6 @@ var BattagliaComponent = /** @class */ (function () {
         var _this = this;
         this.gm.get_gameid(this.gameid).subscribe(function (games) {
             _this.partita = games;
-            //    console.log('assegno partita');
             _this.get_turn();
             _this.get_grid();
             _this.loaded = true;
@@ -379,10 +380,11 @@ var BattagliaComponent = /** @class */ (function () {
     //funzione per ottenere i campi di gioco 
     BattagliaComponent.prototype.get_grid = function () {
         var _this = this;
+        if (this.partita.players.length <= 1)
+            return;
         this.gm.get_grid(this.gameid, this.us.get_id()).subscribe(function (grids) {
             _this.myGrid = grids.myGrid;
             _this.opponentGrid = grids.opponentGrid;
-            console.log('assegno partita');
         }, function (err) {
             // Try to renew the token
             _this.us.renew().subscribe(function () {
@@ -398,14 +400,10 @@ var BattagliaComponent = /** @class */ (function () {
     BattagliaComponent.prototype.get_turn = function () {
         var _this = this;
         if (this.partita.gameStatus == 0) {
-            console.log('entro in stato 0');
             return;
         }
         this.gm.get_turn(this.gameid, this.us.get_id()).subscribe(function (turno) {
-            console.log('id opponent è = ' + _this.findOpponent(_this.us.get_id()));
-            console.log('il mio id è = ' + _this.us.get_id());
             _this.turno = turno;
-            console.log('turno vale' + turno);
         }, function (err) {
             // Try to renew the token
             _this.us.renew().subscribe(function () {
@@ -433,42 +431,30 @@ var BattagliaComponent = /** @class */ (function () {
         this.MyShip.horizontal = horizontal;
         if (this.MyShip.size == 2) {
             this.myindex = this.cacciaindex;
-            console.log('myindex vale' + this.myindex);
-            console.log('cacciaindex vale' + this.cacciaindex);
         }
         if (this.MyShip.size == 3) {
             this.myindex = this.sottomarinoindex;
-            console.log('myindex vale' + this.myindex);
-            console.log('cacciaindex vale' + this.sottomarinoindex);
         }
         if (this.MyShip.size == 4) {
             this.myindex = this.carrozzataindex;
-            console.log('myindex vale' + this.myindex);
-            console.log('cacciaindex vale' + this.carrozzataindex);
         }
         if (this.MyShip.size == 5) {
             this.myindex = this.portaindex;
-            console.log('myindex vale' + this.myindex);
-            console.log('cacciaindex vale' + this.portaindex);
         }
-        console.log('ho settato la nave: ' + JSON.stringify(this.MyShip));
     };
     //funzione per posizionare la nave
     BattagliaComponent.prototype.post_ship = function (col, row, gameid, gridIndex, horizontal) {
         var _this = this;
         if (this.MyShip.size == 0) {
             this.setnave = false;
-            console.log('seleziona nave');
             return;
         }
         var txt = ' { "gameId" :"' + gameid + '",'
             + '"shipIndex" :' + gridIndex + ','
             + '"x":' + col + ',"y":' + row + ',"horizontal":' + horizontal + '}';
-        console.log('il valore di txt' + txt);
         var dati = JSON.parse(txt);
         this.gm.post_ship(dati).subscribe(function (esito) {
             if (esito) {
-                console.log('il valore di esito è ' + esito);
                 if ((0 <= gridIndex) && (gridIndex <= 3))
                     _this.cacciaindex = _this.cacciaindex - 1;
                 if ((4 <= gridIndex) && (gridIndex <= 5))
@@ -479,11 +465,9 @@ var BattagliaComponent = /** @class */ (function () {
                     _this.portaindex = _this.portaindex - 1;
                 _this.MyShip.size = 0;
                 _this.setnave = true;
-                console.log('nave postata' + txt);
             }
             else {
                 _this.setnave = false;
-                console.log('il valore di esito è ' + esito);
             }
         }, function (error) {
             _this.setnave = false;
@@ -494,41 +478,45 @@ var BattagliaComponent = /** @class */ (function () {
     BattagliaComponent.prototype.fire = function (x, y, gameid) {
         var txt = ' { "id" :"' + gameid + '",'
             + '"x" :' + x + ',"y":' + y + '}';
-        console.log('il valore di txt' + txt);
         var dati = JSON.parse(txt);
         this.gm.post_shot(dati).subscribe(function () {
         }, function (error) {
         });
     };
-    //  this.MyShip.x=row;
-    //  this.MyShip.y=col;
-    //   for(var i: number = 0; i < this.MyShip.size; i++)
-    //  this.MyPartita.shipGrid[row][col+i]=1;
-    //  console.log('le coordinate: ' + JSON.stringify(this.MyShip) );
     BattagliaComponent.prototype.hasBoat = function (col, row) {
         var index = row * 10 + col;
+        if (this.myGrid == null)
+            return;
         if (this.myGrid[index].ship != -1)
             return true;
         return false;
     };
     BattagliaComponent.prototype.myGridisSunk = function (col, row) {
         var index = row * 10 + col;
+        if (this.myGrid == null)
+            return;
         if ((this.myGrid[index].sunk != null) && (this.myGrid[index].sunk != undefined))
             return this.myGrid[index].sunk;
         return false;
     };
     BattagliaComponent.prototype.opponentSunk = function (col, row) {
         var index = row * 10 + col;
+        if (this.opponentGrid == null)
+            return;
         if ((this.opponentGrid[index].sunk != null) && (this.opponentGrid[index].sunk != undefined))
             return this.opponentGrid[index].sunk;
         return false;
     };
     BattagliaComponent.prototype.myGridIsHit = function (col, row) {
         var index = row * 10 + col;
+        if (this.myGrid == null)
+            return;
         return this.myGrid[index].shot;
     };
     BattagliaComponent.prototype.opponentIsHit = function (col, row) {
         var index = row * 10 + col;
+        if (this.opponentGrid == null)
+            return;
         return this.opponentGrid[index].shot;
     };
     //verifica se sei il vincitore
@@ -635,7 +623,7 @@ var ChatComponent = /** @class */ (function () {
         this.chat.timestamp = new Date();
         this.chat.authormail = this.us.get_mail();
         this.ms.post_message(this.chat).subscribe(function (m) {
-            console.log('chatposted');
+            // console.log('chatposted');
             _this.set_empty();
         }, function (error) {
             console.log('Error occurred while posting: ' + error);
@@ -736,7 +724,6 @@ var GameListComponent = /** @class */ (function () {
         var txt = ' { "id" :"' + idgame + '",' + '"userId" :"' + idus + '"}';
         var dati = JSON.parse(txt);
         this.gm.join_game(dati).subscribe(function () {
-            console.log('jong eseguita');
         }, function (error) {
             console.log('Error occurred while posting: ' + error);
         });
@@ -781,7 +768,7 @@ module.exports = ""
 /***/ "./src/app/menu/menu.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<nav>  \r\n  <ul>  \r\n   <li><a routerLink=\"/messages\">Lista messaggi</a></li>\r\n   <li><a routerLink=\"/userlist\">Lista utenti registrati</a></li>\r\n   <li><a routerLink=\"/gamelist\">Partite</a></li>\r\n   \r\n  </ul>  \r\n </nav>\r\n <ul class=\"nav justify-content-end bottomfooter\">\r\n    <li class=\"nav-item\">\r\n      <div class=\"btn-group dropup\">\r\n        <button type=\"button\" class=\"btn btn-secondary dropdown-toggle\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">\r\n          {{us.get_username()}}\r\n        </button>\r\n        <div class=\"dropdown-menu\">\r\n          <div class=\"dropdown-item\" href=\"#\">{{us.get_mail()}}</div>\r\n          <div *ngIf=\"us.is_admin()\" class=\"dropdown-item\" href=\"#\"><i class=\"fas fa-check\"></i> Admin role</div>\r\n          <div *ngIf=\"us.is_player()\" class=\"dropdown-item\" href=\"#\"><i class=\"fas fa-check\"></i> Palyer role</div>\r\n          <div class=\"dropdown-divider\"></div>\r\n          <a class=\"dropdown-item nav-link\" (click)=\"logout()\" >Logout</a>\r\n        </div>\r\n      </div>\r\n    </li>\r\n  </ul>"
+module.exports = "<nav>  \r\n  <ul>  \r\n   <li><a routerLink=\"/messages\">Gestione messaggi</a></li>\r\n   <li><a routerLink=\"/userlist\">Classifica utenti</a></li>\r\n   <li><a routerLink=\"/gamelist\">Partite</a></li>\r\n   \r\n  </ul>  \r\n </nav>\r\n <ul class=\"nav justify-content-end bottomfooter\">\r\n    <li class=\"nav-item\">\r\n      <div class=\"btn-group dropup\">\r\n        <button type=\"button\" class=\"btn btn-secondary dropdown-toggle\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">\r\n          {{us.get_username()}}\r\n        </button>\r\n        <div class=\"dropdown-menu\">\r\n          <div class=\"dropdown-item\" href=\"#\">{{us.get_mail()}}</div>\r\n          <div *ngIf=\"us.is_admin()\" class=\"dropdown-item\" href=\"#\"><i class=\"fas fa-check\"></i> Admin role</div>\r\n          <div *ngIf=\"us.is_player()\" class=\"dropdown-item\" href=\"#\"><i class=\"fas fa-check\"></i> Palyer role</div>\r\n          <div class=\"dropdown-divider\"></div>\r\n          <a class=\"dropdown-item nav-link\" (click)=\"logout()\" >Logout</a>\r\n        </div>\r\n      </div>\r\n    </li>\r\n  </ul>"
 
 /***/ }),
 
@@ -975,7 +962,7 @@ var MessageHttpService = /** @class */ (function () {
         return this.http.get(this.us.url + '/messages', this.create_options({ limit: '10', skip: '0' })).pipe(Object(__WEBPACK_IMPORTED_MODULE_2_rxjs_operators__["a" /* catchError */])(this.handleError));
     };
     MessageHttpService.prototype.get_receivermessages = function (mail) {
-        return this.http.get(this.us.url + '/messages/' + mail, this.create_options({ limit: '10', skip: '0' })).pipe(Object(__WEBPACK_IMPORTED_MODULE_2_rxjs_operators__["a" /* catchError */])(this.handleError));
+        return this.http.get(this.us.url + '/messages/' + mail, this.create_options()).pipe(Object(__WEBPACK_IMPORTED_MODULE_2_rxjs_operators__["a" /* catchError */])(this.handleError));
     };
     MessageHttpService.prototype.post_message = function (m) {
         console.log('Posting ' + JSON.stringify(m));
@@ -1178,19 +1165,19 @@ var PartiteHttpService = /** @class */ (function () {
         };
     };
     PartiteHttpService.prototype.get_gamelist = function () {
-        return this.http.get(this.us.url + '/games/status/' + 0, this.create_options({ limit: '10', skip: '0' })).pipe(Object(__WEBPACK_IMPORTED_MODULE_2_rxjs_operators__["a" /* catchError */])(this.handleError));
+        return this.http.get(this.us.url + '/games/status/' + 0, this.create_options()).pipe(Object(__WEBPACK_IMPORTED_MODULE_2_rxjs_operators__["a" /* catchError */])(this.handleError));
     };
     PartiteHttpService.prototype.get_gameid = function (id) {
-        return this.http.get(this.us.url + '/games/' + id, this.create_options({ limit: '10', skip: '0' })).pipe(Object(__WEBPACK_IMPORTED_MODULE_2_rxjs_operators__["a" /* catchError */])(this.handleError));
+        return this.http.get(this.us.url + '/games/' + id, this.create_options()).pipe(Object(__WEBPACK_IMPORTED_MODULE_2_rxjs_operators__["a" /* catchError */])(this.handleError));
     };
     PartiteHttpService.prototype.get_turn = function (game, id) {
-        return this.http.get(this.us.url + '/games/' + game + '/turn/' + id, this.create_options({ limit: '10', skip: '0' })).pipe(Object(__WEBPACK_IMPORTED_MODULE_2_rxjs_operators__["a" /* catchError */])(this.handleError));
+        return this.http.get(this.us.url + '/games/' + game + '/turn/' + id, this.create_options()).pipe(Object(__WEBPACK_IMPORTED_MODULE_2_rxjs_operators__["a" /* catchError */])(this.handleError));
     };
     PartiteHttpService.prototype.get_grid = function (id, userId) {
-        return this.http.get(this.us.url + '/games/' + id + '/battlefields/' + userId, this.create_options({ limit: '10', skip: '0' })).pipe(Object(__WEBPACK_IMPORTED_MODULE_2_rxjs_operators__["a" /* catchError */])(this.handleError));
+        return this.http.get(this.us.url + '/games/' + id + '/battlefields/' + userId, this.create_options()).pipe(Object(__WEBPACK_IMPORTED_MODULE_2_rxjs_operators__["a" /* catchError */])(this.handleError));
     };
     PartiteHttpService.prototype.join_game = function (dati) {
-        return this.http.post(this.us.url + '/games/join', dati, this.create_options({ limit: '10', skip: '0' })).pipe(Object(__WEBPACK_IMPORTED_MODULE_2_rxjs_operators__["a" /* catchError */])(this.handleError));
+        return this.http.post(this.us.url + '/games/join', dati, this.create_options()).pipe(Object(__WEBPACK_IMPORTED_MODULE_2_rxjs_operators__["a" /* catchError */])(this.handleError));
     };
     PartiteHttpService.prototype.post_game = function (id) {
         return this.http.post(this.us.url + '/games', id, this.create_options()).pipe(Object(__WEBPACK_IMPORTED_MODULE_2_rxjs_operators__["a" /* catchError */])(this.handleError));
@@ -1308,7 +1295,7 @@ var SocketioService = /** @class */ (function () {
             // the first is invoked by our observable when new data is available. The
             // second is invoked if an error occurred
             _this.socket.on('broadcast', function (m) {
-                console.log('Socket.io message received: ' + JSON.stringify(m));
+                // console.log('Socket.io message received: ' + JSON.stringify(m) );
                 observer.next(m);
             });
             _this.socket.on('error', function (err) {
@@ -1363,12 +1350,12 @@ var UserHttpService = /** @class */ (function () {
         this.http = http;
         this.users = [];
         this.token = '';
-        this.url = 'http://localhost:8080';
+        this.url = 'http://10.0.2.2:8080';
         console.log('User service instantiated');
     }
     UserHttpService.prototype.login = function (mail, password, remember) {
         var _this = this;
-        console.log('Login: ' + mail + ' ' + password);
+        // console.log('Login: ' + mail + ' ' + password );
         var options = {
             headers: new __WEBPACK_IMPORTED_MODULE_1__angular_common_http__["c" /* HttpHeaders */]({
                 authorization: 'Basic ' + btoa(mail + ':' + password),
@@ -1551,11 +1538,11 @@ var UserListComponent = /** @class */ (function () {
     UserListComponent.prototype.delete_user = function (id) {
         var _this = this;
         this.us.delete_user(id).subscribe(function (d) {
-            console.log('utente cancellato: ' + JSON.stringify(d));
+            //console.log('utente cancellato: ' + JSON.stringify(d) );
             _this.errmessage = undefined;
             _this.router.navigate(['/menu']);
         }, function (err) {
-            console.log('errore cancellazione: ' + JSON.stringify(err.error.errormessage));
+            // console.log('errore cancellazione: ' + JSON.stringify(err.error.errormessage) );
             _this.errmessage = err.error.errormessage;
         });
     };
@@ -1753,7 +1740,7 @@ var UserService = /** @class */ (function () {
         this.url = '';
     }
     UserService.prototype.login = function (mail, password, remember) {
-        console.log('Login: ' + mail + ' ' + password);
+        // console.log('Login: ' + mail + ' ' + password );
         // tslint:disable-next-line:max-line-length
         this.token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwicm9sZXMiOlsiQURNSU4iLCJNT0RFUkFUT1IiXSwibWFpbCI6ImFkbWluQHBvc3RtZXNzYWdlcy5pdCIsImlkIjoiNWFjNGRkYzcxMWUwMzYwYmEyZGYzZjQ4IiwiaWF0IjoxNTIyODU2MjU3LCJleHAiOjE1MjI4NTk4NTd9.3p6TmJAMqL19h4-b_r2pBdyerdbHh_l3zA87ZTfqeYk';
         return Object(__WEBPACK_IMPORTED_MODULE_2_rxjs_observable_of__["a" /* of */])({});
@@ -1846,7 +1833,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 if (__WEBPACK_IMPORTED_MODULE_3__environments_environment__["a" /* environment */].production) {
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_13" /* enableProdMode */])();
 }
-// Device bootstrap
 document.addEventListener('deviceready', function () {
     Object(__WEBPACK_IMPORTED_MODULE_1__angular_platform_browser_dynamic__["a" /* platformBrowserDynamic */])().bootstrapModule(__WEBPACK_IMPORTED_MODULE_2__app_app_module__["a" /* AppModule */]).catch(function (err) {
         return console.log(err);

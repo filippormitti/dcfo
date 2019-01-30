@@ -1,5 +1,3 @@
-import { Player } from './../Player';
-
 import { Ship } from './../Ship';
 import { Board} from './../Battaglia';
 import { Component, OnInit,Input } from '@angular/core';
@@ -17,8 +15,8 @@ import { SocketioService } from '../socketio.service';
   styleUrls: ['./battaglia.component.css']
 })
 export class BattagliaComponent implements OnInit {
-  loaded=false;
-  partita: Game;
+loaded=false;ù
+partita: Game;
 gameid: string;
 posizione;
 MyBoard: Board = new Board();
@@ -54,28 +52,22 @@ opponentGrid=null;
   
  
   ngOnInit() {
-    this.route.params.subscribe((params) => this.gameid = params.gameid
-    );
+    this.route.params.subscribe((params) => this.gameid = params.gameid);
     this.get_game()
     this.sio.connect().subscribe( (m) => {
     this.get_game();
-    
-    });
-    
-   
-    }
-//funzione per ottenere il gioco
+        });
+      }
+
+ //funzione per ottenere il gioco
   public get_game() {
     this.gm.get_gameid(this.gameid).subscribe(
    ( games ) => {
      this.partita = games;
-  //    console.log('assegno partita');
-      this.get_turn();
-      this.get_grid();
+     this.get_turn();
+     this.get_grid();
      this.loaded=true;
-   } , (err) => {
-
-
+      } , (err) => {
      // Try to renew the token
      this.us.renew().subscribe( () => {
        // Succeeded
@@ -89,15 +81,12 @@ opponentGrid=null;
 }
 
 //funzione per ottenere i campi di gioco 
-public get_grid()
-{
-  if(this.partita.players.length<1)
+public get_grid(){
+  if(this.partita.players.length<=1)
   return;
     this.gm.get_grid(this.gameid, this.us.get_id()).subscribe(( grids) => {
             this.myGrid = grids.myGrid;
             this.opponentGrid = grids.opponentGrid;
-
-            //console.log('assegno partita');
         } , (err) => {
             // Try to renew the token
             this.us.renew().subscribe( () => {
@@ -116,19 +105,14 @@ public get_grid()
 //funzione per ottenere il turno
 public get_turn(){  
   if (this.partita.gameStatus==0){
-   // console.log('entro in stato 0');
     return;
   }
  
   this.gm.get_turn(this.gameid,this.us.get_id()).subscribe(
     ( turno ) => {
-//console.log('Verificato opponent vale = '+ this.findOpponent(this.us.get_id()))
-//console.log('il mio id è = '+ this.us.get_id())
       this.turno = turno;
-      //console.log('verifica turno eseguita');
-         } , (err) => {
- 
-      // Try to renew the token
+            } , (err) => {
+       // Try to renew the token
       this.us.renew().subscribe( () => {
         // Succeeded
         this.get_turn();
@@ -156,42 +140,30 @@ public findOpponent(id:string){
 
     if(this.MyShip.size==2){
     this.myindex=this.cacciaindex;
-   // console.log('myindex vale' +this.myindex);
-    //console.log('cacciaindex vale' +this.cacciaindex);
-  }
+      }
     if(this.MyShip.size==3){
     this.myindex=this.sottomarinoindex;
-   // console.log('myindex vale' +this.myindex);
-   // console.log('cacciaindex vale' +this.sottomarinoindex);
-  }
+      }
     if(this.MyShip.size==4){
     this.myindex=this.carrozzataindex;
-    //console.log('myindex vale' +this.myindex);
-   // console.log('cacciaindex vale' +this.carrozzataindex);
-  }
+      }
     if(this.MyShip.size==5){
     this.myindex=this.portaindex;
-   // console.log('myindex vale' +this.myindex);
-    //console.log('cacciaindex vale' +this.portaindex);
-  }
-    //console.log('ho settato la nave: ' + JSON.stringify(this.MyShip) );
+      }
 }
   
 //funzione per posizionare la nave
   public post_ship(col: number, row:number, gameid:string,gridIndex:number,horizontal:boolean){
     if (this.MyShip.size==0){
       this.setnave=false;
-      //console.log('seleziona nave')
       return; 
     }
     var txt  = ' { "gameId" :"' +gameid+'",'
     +'"shipIndex" :'+gridIndex+','
     +'"x":'+col+',"y":'+row+',"horizontal":'+horizontal+'}';
-    console.log('il valore di txt' +txt);
-      var dati = JSON.parse(txt);
+         var dati = JSON.parse(txt);
             this.gm.post_ship(dati).subscribe( (esito) => {
               if(esito){
-             // console.log('il valore di esito è ' +esito);
               if((0<=gridIndex)&&(gridIndex<=3))
               this.cacciaindex=this.cacciaindex -1;
               if((4<=gridIndex)&&(gridIndex<=5))
@@ -202,13 +174,10 @@ public findOpponent(id:string){
               this.portaindex=this.portaindex-1;
               this.MyShip.size=0;
               this.setnave=true;
-              console.log('nave postata' +txt);
-              }
+                  }
               else  {
                 this.setnave=false;
-               // console.log('il valore di esito è ' +esito);
-              }
-
+                     }
             }, (error) => {
               this.setnave=false;
       console.log('Error occurred while posting: ' + error);
@@ -219,34 +188,21 @@ public findOpponent(id:string){
     }
 //funzione per fare il colpo
     public fire(x: number,y: number, gameid:string){
-     
       var txt  = ' { "id" :"' +gameid+'",'
       +'"x" :'+x+',"y":'+y+'}';
-      console.log('il valore di txt' +txt);
         var dati = JSON.parse(txt);
               this.gm.post_shot(dati).subscribe( () => {
-               
-              }, (error) => {
+               }, (error) => {
            });
+          }
     
-             
-     
-      }
-    
-
-
-  
-
- 
-
-  
   hasBoat(col: number, row:number){
      var index= row*10+col
      if(this.myGrid==null)
      return;
-   if(this.myGrid[index].ship!=-1)
-    return true;
-   return false;
+    if(this.myGrid[index].ship!=-1)
+      return true;
+    return false;
   }
   myGridisSunk(col: number, row:number){
     var index= row*10+col
@@ -294,8 +250,6 @@ iswin(){
     this.router.navigate(['/']);
   }
 
-
- 
 }
 
 

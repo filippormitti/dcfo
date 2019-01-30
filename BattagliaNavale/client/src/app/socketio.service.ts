@@ -21,7 +21,7 @@ export class SocketioService {
       // second is invoked if an error occurred
 
       this.socket.on('broadcast', (m) => {
-        console.log('Socket.io message received: ' + JSON.stringify(m) );
+       // console.log('Socket.io message received: ' + JSON.stringify(m) );
         observer.next( m );
 
       });

@@ -26,9 +26,7 @@ export class UserListComponent implements OnInit {
     this.us.get_userlist().subscribe(
       ( users ) => {
         this.users = users;
-
       } , (err) => {
-
         // Try to renew the token
         this.us.renew().subscribe( () => {
           // Succeeded
