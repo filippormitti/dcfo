@@ -470,7 +470,10 @@ mongoose.connect( 'mongodb://localhost:27017/Battaglia' ).then(
         
         var u = user.newUser( {
           username: "admin",
-          mail: "admin@postmessages.it"
+          mail: "admin@postmessages.it",
+          won:0,
+          lost:0,
+          played:0
         } );
         u.setAdmin();
         u.setPlayer();
