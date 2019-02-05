@@ -31,7 +31,6 @@ export class GameListComponent implements OnInit {
       ( games ) => {
         this.games = games;
       } , (err) => {
-
         // Try to renew the token
         this.us.renew().subscribe( () => {
           // Succeeded
@@ -44,11 +43,10 @@ export class GameListComponent implements OnInit {
     );
   }
 
-  public Join_user( idgame: string,idus:number ) {
+  public Join_user( idgame: string,idus:string ) {
     var txt  = ' { "id" :"' +idgame+'",'+'"userId" :"'+idus+'"}';
     var dati = JSON.parse(txt);
         this.gm.join_game(dati).subscribe( () => {
-                  // console.log('jong eseguita');
           }, (error) => {
     console.log('Error occurred while posting: ' + error);
     });

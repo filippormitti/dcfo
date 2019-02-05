@@ -48,7 +48,7 @@ export class PartiteHttpService {
   }
 
   get_gamelist(): Observable<Game[]> {
-    return this.http.get<Game[]>( this.us.url + '/games/status/'+0, this.create_options()).pipe(
+    return this.http.get<Game[]>( this.us.url + '/games/status/'+0, this.create_options(  )).pipe(
                 catchError( this.handleError )
       );
   }
@@ -58,17 +58,17 @@ export class PartiteHttpService {
       );
   }
   get_turn(game:string,id:string): Observable<boolean> {
-     return this.http.get<boolean>( this.us.url + '/games/'+game+'/turn/'+id, this.create_options(  )).pipe(
+     return this.http.get<boolean>( this.us.url + '/games/'+game+'/turn/'+id, this.create_options()).pipe(
                 catchError( this.handleError )
       );
   }
   get_grid(id:string, userId:string): Observable<object[]> {
-    return this.http.get<object[]>( this.us.url + '/games/'+id+'/battlefields/'+userId, this.create_options(  )).pipe(
+    return this.http.get<object[]>( this.us.url + '/games/'+id+'/battlefields/'+userId, this.create_options()).pipe(
                catchError( this.handleError )
      );
  }
   join_game(dati:object): Observable<boolean> {
-        return this.http.post<object>( this.us.url + '/games/join', dati,this.create_options( )).pipe(
+        return this.http.post<object>( this.us.url + '/games/join', dati,this.create_options()).pipe(
        
         catchError( this.handleError )
       );

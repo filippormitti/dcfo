@@ -32,13 +32,10 @@ this.chat = { tags: [], content: '', timestamp: new Date(), authormail: '',recei
 
 }
   public get_receivermessages(mail:string) {
-    
-       this.ms.get_receivermessages(mail).subscribe(
+    this.ms.get_receivermessages(mail).subscribe(
       ( messages ) => {
         this.messages = messages;
-        
-      } , (err) => {
-
+           } , (err) => {
         // Try to renew the token
         this.us.renew().subscribe( () => {
           // Succeeded

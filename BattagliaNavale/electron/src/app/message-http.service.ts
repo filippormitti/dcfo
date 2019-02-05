@@ -54,7 +54,7 @@ export class MessageHttpService {
   }
 
   get_receivermessages(mail:string): Observable<Message[]> {
-       return this.http.get<Message[]>( this.us.url + '/messages/' + mail, this.create_options() ).pipe(
+       return this.http.get<Message[]>( this.us.url + '/messages/' + mail, this.create_options( ) ).pipe(
         catchError( this.handleError )
       );
   }
